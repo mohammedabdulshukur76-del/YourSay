@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Issues — YourSay</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700;900&family=Epilogue:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#ffffff;--surface:#f7f8f6;--border:#e8ebe7;--border-dark:#d0d5ce;--ink:#111612;--muted:#8a958a;--green:#1a7a44;--green-light:#edf7f1;--green-mid:#c2e8d0;--red:#c0392b;--red-light:#fdf0ee;--gold:#b07d1a;--gold-light:#fdf5e0;--font-head:'Fraunces',serif;--font-body:'Epilogue',sans-serif;}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--ink);font-family:var(--font-body);min-height:100vh;overflow-x:hidden;}
+
+  nav{position:sticky;top:0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:0 48px;height:64px;background:#fff;border-bottom:1px solid var(--border);}
+  .logo{font-family:var(--font-head);font-size:1.35rem;font-weight:900;color:var(--ink);letter-spacing:-.5px;flex-shrink:0;text-decoration:none;}
+  .logo em{font-style:normal;color:var(--green);}
+  .nav-links{display:flex;gap:2px;list-style:none;}
+  .nav-links a{color:var(--muted);text-decoration:none;font-size:.875rem;font-weight:500;padding:7px 13px;border-radius:6px;transition:all .15s;white-space:nowrap;}
+  .nav-links a:hover,.nav-links a.active{color:var(--ink);background:var(--surface);}
+  .nav-right{display:flex;align-items:center;gap:10px;flex-shrink:0;}
+  .live-badge{display:flex;align-items:center;gap:6px;font-size:.72rem;font-weight:600;color:var(--green);background:var(--green-light);border:1px solid var(--green-mid);padding:5px 10px;border-radius:100px;}
+  .dot{width:6px;height:6px;background:var(--green);border-radius:50%;animation:blink 1.4s infinite;}
+  @keyframes blink{0%,100%{opacity:1;}50%{opacity:.2;}}
+  .nav-btn{background:var(--ink);color:#fff;padding:8px 16px;border-radius:7px;font-weight:600;font-size:.83rem;cursor:pointer;border:none;font-family:var(--font-body);}
+  .hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none;padding:4px;}
+  .hamburger span{display:block;width:22px;height:2px;background:var(--ink);border-radius:2px;}
+  .mobile-nav{display:none;flex-direction:column;background:#fff;border-bottom:1px solid var(--border);padding:12px 20px 16px;gap:2px;}
+  .mobile-nav a{color:var(--ink);text-decoration:none;font-size:.95rem;font-weight:500;padding:10px 12px;border-radius:7px;}
+  .mobile-nav .mob-btn{background:var(--ink);color:#fff;text-align:center;padding:11px;border-radius:7px;margin-top:6px;font-weight:600;}
+  .mobile-nav.open{display:flex;}
+
+  /* PAGE HEADER */
+  .page-header{background:var(--surface);border-bottom:1px solid var(--border);padding:36px 48px;}
+  .page-header-inner{max-width:1200px;margin:0 auto;display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap;}
+  .breadcrumb{font-size:.75rem;color:var(--muted);margin-bottom:10px;}
+  .breadcrumb a{color:var(--green);text-decoration:none;}
+  .page-header h1{font-family:var(--font-head);font-size:2rem;font-weight:900;letter-spacing:-1px;margin-bottom:6px;}
+  .page-header p{color:var(--muted);font-size:.9rem;}
+  .raise-btn{background:var(--green);color:#fff;padding:12px 22px;border-radius:8px;font-weight:600;font-size:.9rem;cursor:pointer;border:none;font-family:var(--font-body);white-space:nowrap;}
+
+  /* TABS */
+  .tabs-bar{border-bottom:1px solid var(--border);background:#fff;}
+  .tabs-inner{max-width:1200px;margin:0 auto;padding:0 48px;display:flex;gap:0;}
+  .tab{padding:14px 20px;font-size:.875rem;font-weight:500;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;white-space:nowrap;}
+  .tab:hover{color:var(--ink);}
+  .tab.active{color:var(--green);border-bottom-color:var(--green);font-weight:600;}
+  .tab-count{background:var(--surface);color:var(--muted);font-size:.68rem;font-weight:600;padding:2px 6px;border-radius:4px;margin-left:6px;}
+  .tab.active .tab-count{background:var(--green-light);color:var(--green);}
+
+  /* CONTENT */
+  .content{max-width:1200px;margin:0 auto;padding:32px 48px;}
+
+  /* TOOLBAR */
+  .toolbar{display:flex;gap:12px;margin-bottom:28px;flex-wrap:wrap;}
+  .search-wrap{position:relative;flex:1;min-width:200px;}
+  .search-wrap input{width:100%;padding:10px 16px 10px 40px;border:1.5px solid var(--border);border-radius:8px;font-family:var(--font-body);font-size:.875rem;color:var(--ink);outline:none;transition:border-color .15s;}
+  .search-wrap input:focus{border-color:var(--green);}
+  .search-icon{position:absolute;left:13px;top:50%;transform:translateY(-50%);font-size:.9rem;color:var(--muted);}
+  .filter-select{padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:var(--font-body);font-size:.83rem;color:var(--ink);background:#fff;cursor:pointer;outline:none;}
+
+  /* ISSUES GRID */
+  .issues-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;}
+
+  .issue-card{border:1px solid var(--border);border-radius:12px;padding:22px;transition:border-color .15s,box-shadow .15s;cursor:pointer;}
+  .issue-card:hover{border-color:var(--border-dark);box-shadow:0 4px 16px rgba(0,0,0,.06);}
+
+  .card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;gap:8px;}
+  .issue-pill{display:inline-block;font-size:.65rem;padding:3px 8px;border-radius:4px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;}
+  .pill-urgent{background:var(--red-light);color:var(--red);}
+  .pill-funded{background:var(--green-light);color:var(--green);}
+  .pill-review{background:var(--gold-light);color:var(--gold);}
+  .pill-open{background:var(--surface);color:var(--muted);border:1px solid var(--border);}
+  .pill-done{background:var(--green-light);color:var(--green);}
+
+  .issue-num{font-size:.72rem;color:var(--muted);font-weight:500;}
+  .issue-title{font-family:var(--font-head);font-size:1rem;font-weight:700;line-height:1.35;margin-bottom:10px;letter-spacing:-.3px;}
+  .issue-desc{font-size:.83rem;color:var(--muted);line-height:1.55;margin-bottom:16px;}
+
+  .issue-meta{display:flex;gap:16px;margin-bottom:16px;flex-wrap:wrap;}
+  .meta-item{display:flex;align-items:center;gap:5px;font-size:.75rem;color:var(--muted);}
+
+  /* FUND PROGRESS */
+  .fund-progress{margin-bottom:16px;}
+  .fp-top{display:flex;justify-content:space-between;margin-bottom:6px;font-size:.75rem;}
+  .fp-raised{font-weight:600;color:var(--ink);}
+  .fp-goal{color:var(--muted);}
+  .fp-bar-wrap{background:var(--surface);border-radius:100px;height:6px;overflow:hidden;}
+  .fp-bar{height:100%;border-radius:100px;background:var(--green);}
+
+  .card-foot{display:flex;justify-content:space-between;align-items:center;}
+  .vote-info{display:flex;align-items:center;gap:6px;font-size:.8rem;color:var(--muted);font-weight:500;}
+  .vote-btn{background:var(--surface);color:var(--ink);border:1.5px solid var(--border-dark);padding:6px 14px;border-radius:6px;font-size:.78rem;font-weight:600;cursor:pointer;font-family:var(--font-body);transition:all .12s;}
+  .vote-btn:hover{background:var(--green-light);border-color:var(--green);color:var(--green);}
+  .view-btn{font-size:.78rem;color:var(--green);font-weight:500;text-decoration:none;}
+  .view-btn:hover{text-decoration:underline;}
+
+  /* RAISE ISSUE SECTION */
+  .raise-section{margin-top:40px;background:var(--surface);border:1.5px dashed var(--border-dark);border-radius:16px;padding:36px;text-align:center;}
+  .raise-section h2{font-family:var(--font-head);font-size:1.5rem;font-weight:900;letter-spacing:-.5px;margin-bottom:8px;}
+  .raise-section p{color:var(--muted);font-size:.9rem;margin-bottom:24px;}
+  .raise-form{display:grid;grid-template-columns:1fr 1fr;gap:14px;max-width:640px;margin:0 auto;text-align:left;}
+  .raise-form input,.raise-form select,.raise-form textarea{padding:11px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:var(--font-body);font-size:.875rem;color:var(--ink);outline:none;width:100%;transition:border-color .15s;}
+  .raise-form input:focus,.raise-form select:focus,.raise-form textarea:focus{border-color:var(--green);}
+  .raise-form textarea{resize:vertical;min-height:90px;}
+  .full-col{grid-column:1/3;}
+  .form-label{font-size:.75rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;margin-bottom:5px;display:block;}
+  .submit-btn{background:var(--green);color:#fff;padding:12px;border-radius:8px;font-weight:600;font-size:.9rem;cursor:pointer;border:none;font-family:var(--font-body);width:100%;}
+
+  footer{border-top:1px solid var(--border);padding:22px 48px;display:flex;justify-content:space-between;align-items:center;font-size:.775rem;color:var(--muted);margin-top:40px;}
+
+  @keyframes fadeUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+  .page-header{animation:fadeUp .4s ease both;}
+  .content{animation:fadeUp .4s .1s ease both;}
+
+  @media(max-width:960px){
+    nav{padding:0 24px;} .nav-links,.live-badge{display:none;} .hamburger{display:flex;}
+    .page-header{padding:24px;}
+    .tabs-inner{padding:0 24px;overflow-x:auto;}
+    .content{padding:24px;}
+    .issues-grid{grid-template-columns:1fr;}
+    footer{padding:16px 24px;flex-direction:column;gap:6px;text-align:center;}
+  }
+  @media(max-width:480px){
+    nav{padding:0 16px;height:56px;} .nav-btn{display:none;}
+    .raise-form{grid-template-columns:1fr;}
+    .full-col{grid-column:1;}
+    .page-header-inner{flex-direction:column;align-items:flex-start;}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo">Your<em>Say</em></a>
+  <ul class="nav-links">
+    <li><a href="index.html">Overview</a></li>
+    <li><a href="transactions.html">Transactions</a></li>
+    <li><a href="issues.html" class="active">Issues</a></li>
+    <li><a href="reports.html">Reports</a></li>
+    <li><a href="student-guide.html">Student's Guide</a></li>
+    <li><a href="innovation.html">Innovation</a></li>
+    <li><a href="reviews.html">Reviews</a></li>
+  </ul>
+  <div class="nav-right">
+    <div class="live-badge"><div class="dot"></div> Live</div>
+    <button class="nav-btn">+ Raise Issue</button>
+    <button class="hamburger" onclick="document.querySelector('.mobile-nav').classList.toggle('open')"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div class="mobile-nav">
+  <a href="index.html">Overview</a><a href="transactions.html">Transactions</a><a href="issues.html">Issues</a>
+  <a href="reports.html">Reports</a><a href="student-guide.html">Student's Guide</a><a href="innovation.html">Innovation</a>
+  <a href="reviews.html">Reviews</a>
+  <a href="#" class="mob-btn">+ Raise Issue</a>
+</div>
+
+<div class="page-header">
+  <div class="page-header-inner">
+    <div>
+      <div class="breadcrumb"><a href="index.html">Home</a> / Issues</div>
+      <h1>Public Issues</h1>
+      <p>Raised by citizens. Funded by the public. Verified with proof.</p>
+    </div>
+    <button class="raise-btn">+ Raise an Issue</button>
+  </div>
+</div>
+
+<div class="tabs-bar">
+  <div class="tabs-inner">
+    <div class="tab active">All <span class="tab-count">248</span></div>
+    <div class="tab">Urgent <span class="tab-count">12</span></div>
+    <div class="tab">Open <span class="tab-count">84</span></div>
+    <div class="tab">Funded <span class="tab-count">97</span></div>
+    <div class="tab">Under Review <span class="tab-count">13</span></div>
+    <div class="tab">Completed <span class="tab-count">142</span></div>
+  </div>
+</div>
+
+<div class="content">
+  <div class="toolbar">
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" placeholder="Search issues by title, location, or category…">
+    </div>
+    <select class="filter-select"><option>All Categories</option><option>Healthcare</option><option>Education</option><option>Infrastructure</option><option>Environment</option><option>Safety</option></select>
+    <select class="filter-select"><option>Sort: Most Voted</option><option>Sort: Newest</option><option>Sort: Funding Goal</option></select>
+  </div>
+
+  <div class="issues-grid">
+
+    <div class="issue-card">
+      <div class="card-top">
+        <span class="issue-pill pill-urgent"> Urgent</span>
+        <span class="issue-num">#112</span>
+      </div>
+      <div class="issue-title">Flood relief needed in Khammam — 3 villages affected</div>
+      <div class="issue-desc">Heavy rains have displaced over 400 families. Immediate need for food, shelter, and medical aid in Mudigonda, Enkoor, and Thallada villages.</div>
+      <div class="issue-meta">
+        <span class="meta-item"> Khammam, Telangana</span>
+        <span class="meta-item"> 🏷Disaster Relief</span>
+        <span class="meta-item"> Jun 2, 2026</span>
+      </div>
+      <div class="fund-progress">
+        <div class="fp-top"><span class="fp-raised">₹3,40,000 raised</span><span class="fp-goal">Goal: ₹8,00,000</span></div>
+        <div class="fp-bar-wrap"><div class="fp-bar" style="width:42%"></div></div>
+      </div>
+      <div class="card-foot">
+        <span class="vote-info">▲ 2,341 votes</span>
+        <div style="display:flex;gap:10px;align-items:center;">
+          <a href="#" class="view-btn">View details →</a>
+          <button class="vote-btn">▲ Vote</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="issue-card">
+      <div class="card-top">
+        <span class="issue-pill pill-funded">✅ Funded</span>
+        <span class="issue-num">#87</span>
+      </div>
+      <div class="issue-title">Ambulance for Adilabad tribal area health center</div>
+      <div class="issue-desc">The primary health center in Utnoor serves 12,000+ tribal residents but has no ambulance. Patients travel 40km for emergencies on hired vehicles.</div>
+      <div class="issue-meta">
+        <span class="meta-item"> Adilabad, Telangana</span>
+        <span class="meta-item"> 🏷Healthcare</span>
+        <span class="meta-item"> May 14, 2026</span>
+      </div>
+      <div class="fund-progress">
+        <div class="fp-top"><span class="fp-raised">₹6,00,000 raised</span><span class="fp-goal">Goal: ₹6,00,000</span></div>
+        <div class="fp-bar-wrap"><div class="fp-bar" style="width:100%"></div></div>
+      </div>
+      <div class="card-foot">
+        <span class="vote-info">▲ 1,890 votes</span>
+        <div style="display:flex;gap:10px;align-items:center;">
+          <a href="#" class="view-btn">View details →</a>
+          <button class="vote-btn">▲ Vote</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="issue-card">
+      <div class="card-top">
+        <span class="issue-pill pill-review">🔍 Under Review</span>
+        <span class="issue-num">#103</span>
+      </div>
+      <div class="issue-title">Bridge repair on NH65 — dangerous condition for students</div>
+      <div class="issue-desc">The pedestrian bridge near GHS Narsapur has missing railings and cracked slabs. Over 300 school children use it daily. Two minor accidents reported this month.</div>
+      <div class="issue-meta">
+        <span class="meta-item"> Medak, Telangana</span>
+        <span class="meta-item"> 🏷Infrastructure</span>
+        <span class="meta-item"> May 20, 2026</span>
+      </div>
+      <div class="fund-progress">
+        <div class="fp-top"><span class="fp-raised">₹0 raised</span><span class="fp-goal">Goal: ₹2,50,000</span></div>
+        <div class="fp-bar-wrap"><div class="fp-bar" style="width:0%"></div></div>
+      </div>
+      <div class="card-foot">
+        <span class="vote-info">▲ 1,204 votes</span>
+        <div style="display:flex;gap:10px;align-items:center;">
+          <a href="#" class="view-btn">View details →</a>
+          <button class="vote-btn">▲ Vote</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="issue-card">
+      <div class="card-top">
+        <span class="issue-pill pill-open">Open</span>
+        <span class="issue-num">#108</span>
+      </div>
+      <div class="issue-title">No street lights in Moula Ali — women fear walking at night</div>
+      <div class="issue-desc">A 2km stretch in Moula Ali has had no functional street lights for 8 months. Residents, especially women, report feeling unsafe after 7pm.</div>
+      <div class="issue-meta">
+        <span class="meta-item"> Hyderabad, Telangana</span>
+        <span class="meta-item"> 🏷Safety</span>
+        <span class="meta-item"> May 28, 2026</span>
+      </div>
+      <div class="fund-progress">
+        <div class="fp-top"><span class="fp-raised">₹45,000 raised</span><span class="fp-goal">Goal: ₹1,80,000</span></div>
+        <div class="fp-bar-wrap"><div class="fp-bar" style="width:25%"></div></div>
+      </div>
+      <div class="card-foot">
+        <span class="vote-info">▲ 987 votes</span>
+        <div style="display:flex;gap:10px;align-items:center;">
+          <a href="#" class="view-btn">View details →</a>
+          <button class="vote-btn">▲ Vote</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="issue-card">
+      <div class="card-top">
+        <span class="issue-pill pill-done">✓ Completed</span>
+        <span class="issue-num">#74</span>
+      </div>
+      <div class="issue-title">Drinking water pipeline — Karimnagar old town</div>
+      <div class="issue-desc">600 households had no piped water for 14 months. Pipeline work is now complete. Residents confirmed water supply restored.</div>
+      <div class="issue-meta">
+        <span class="meta-item"> Karimnagar, Telangana</span>
+        <span class="meta-item"> 🏷Water & Sanitation</span>
+        <span class="meta-item"> Mar 10, 2026</span>
+      </div>
+      <div class="fund-progress">
+        <div class="fp-top"><span class="fp-raised">₹5,20,000 raised</span><span class="fp-goal">Goal: ₹5,20,000</span></div>
+        <div class="fp-bar-wrap"><div class="fp-bar" style="width:100%"></div></div>
+      </div>
+      <div class="card-foot">
+        <span class="vote-info">▲ 2,105 votes</span>
+        <div style="display:flex;gap:10px;align-items:center;">
+          <a href="#" class="view-btn">View proof →</a>
+          <button class="vote-btn" style="opacity:.5;cursor:default">✓ Done</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="issue-card">
+      <div class="card-top">
+        <span class="issue-pill pill-open">Open</span>
+        <span class="issue-num">#115</span>
+      </div>
+      <div class="issue-title">Government school has no toilets — 180 girl students affected</div>
+      <div class="issue-desc">ZPHS Banswada has 180 enrolled girl students but zero functional toilets. Many girls drop out by class 8 due to this. Urgent construction needed.</div>
+      <div class="issue-meta">
+        <span class="meta-item"> Nizamabad, Telangana</span>
+        <span class="meta-item">🏷 Education</span>
+        <span class="meta-item"> Jun 1, 2026</span>
+      </div>
+      <div class="fund-progress">
+        <div class="fp-top"><span class="fp-raised">₹12,000 raised</span><span class="fp-goal">Goal: ₹3,50,000</span></div>
+        <div class="fp-bar-wrap"><div class="fp-bar" style="width:3%"></div></div>
+      </div>
+      <div class="card-foot">
+        <span class="vote-info">▲ 743 votes</span>
+        <div style="display:flex;gap:10px;align-items:center;">
+          <a href="#" class="view-btn">View details →</a>
+          <button class="vote-btn">▲ Vote</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- RAISE ISSUE FORM -->
+  <div class="raise-section">
+    <h2>See a problem? Raise it.</h2>
+    <p>Anyone can submit an issue. The community votes. Funds go to the most critical ones first.</p>
+    <div class="raise-form">
+      <div>
+        <label class="form-label">Issue Title</label>
+        <input type="text" placeholder="Brief description of the problem">
+      </div>
+      <div>
+        <label class="form-label">Location</label>
+        <input type="text" placeholder="District, City, Telangana">
+      </div>
+      <div>
+        <label class="form-label">Category</label>
+        <select><option>Select category</option><option>Healthcare</option><option>Education</option><option>Infrastructure</option><option>Water & Sanitation</option><option>Safety</option><option>Environment</option><option>Disaster Relief</option></select>
+      </div>
+      <div>
+        <label class="form-label">Estimated Fund Needed</label>
+        <input type="text" placeholder="e.g. ₹2,00,000">
+      </div>
+      <div class="full-col">
+        <label class="form-label">Describe the Problem</label>
+        <textarea placeholder="Explain the issue clearly — who is affected, since when, and why it needs immediate attention…"></textarea>
+      </div>
+      <div class="full-col">
+        <button class="submit-btn">Submit Issue for Review</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div>© 2026 YourSay — Public Fund Transparency Platform</div>
+  <div> All transactions are publicly audited and immutable</div>
+</footer>
+<script src="app.js"></script>
+<script src="issues.js"></script>
+</body>
+</html>

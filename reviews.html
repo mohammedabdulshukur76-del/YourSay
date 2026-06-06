@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reviews & Feedback — YourSay</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700;900&family=Epilogue:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#ffffff;--surface:#f7f8f6;--border:#e8ebe7;--border-dark:#d0d5ce;
+    --ink:#111612;--muted:#8a958a;
+    --green:#1a7a44;--green-light:#edf7f1;--green-mid:#c2e8d0;
+    --red:#c0392b;--red-light:#fdf0ee;
+    --gold:#b07d1a;--gold-light:#fdf5e0;
+    --blue:#1a5fa8;--blue-light:#e8f0fb;
+    --purple:#6b3fa0;--purple-light:#f0eafa;
+    --font-head:'Fraunces',serif;--font-body:'Epilogue',sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--ink);font-family:var(--font-body);min-height:100vh;overflow-x:hidden;}
+
+  /* ── NAV ── */
+  nav{position:sticky;top:0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:0 48px;height:64px;background:#fff;border-bottom:1px solid var(--border);}
+  .logo{font-family:var(--font-head);font-size:1.35rem;font-weight:900;color:var(--ink);letter-spacing:-.5px;flex-shrink:0;text-decoration:none;}
+  .logo em{font-style:normal;color:var(--green);}
+  .nav-links{display:flex;gap:2px;list-style:none;}
+  .nav-links a{color:var(--muted);text-decoration:none;font-size:.875rem;font-weight:500;padding:7px 13px;border-radius:6px;transition:all .15s;white-space:nowrap;}
+  .nav-links a:hover,.nav-links a.active{color:var(--ink);background:var(--surface);}
+  .nav-right{display:flex;align-items:center;gap:10px;flex-shrink:0;}
+  .live-badge{display:flex;align-items:center;gap:6px;font-size:.72rem;font-weight:600;color:var(--green);background:var(--green-light);border:1px solid var(--green-mid);padding:5px 10px;border-radius:100px;}
+  .dot{width:6px;height:6px;background:var(--green);border-radius:50%;animation:blink 1.4s infinite;}
+  @keyframes blink{0%,100%{opacity:1;}50%{opacity:.2;}}
+  .nav-btn{background:var(--ink);color:#fff;padding:8px 16px;border-radius:7px;font-weight:600;font-size:.83rem;cursor:pointer;border:none;font-family:var(--font-body);}
+  .hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none;padding:4px;}
+  .hamburger span{display:block;width:22px;height:2px;background:var(--ink);border-radius:2px;}
+  .mobile-nav{display:none;flex-direction:column;background:#fff;border-bottom:1px solid var(--border);padding:12px 20px 16px;gap:2px;}
+  .mobile-nav a{color:var(--ink);text-decoration:none;font-size:.95rem;font-weight:500;padding:10px 12px;border-radius:7px;}
+  .mobile-nav a:hover{background:var(--surface);}
+  .mobile-nav .mob-btn{background:var(--ink);color:#fff;text-align:center;padding:11px;border-radius:7px;margin-top:6px;font-weight:600;}
+  .mobile-nav.open{display:flex;}
+
+  /* ── HERO ── */
+  .hero{background:var(--surface);border-bottom:1px solid var(--border);padding:52px 48px;}
+  .hero-inner{max-width:1200px;margin:0 auto;display:flex;justify-content:space-between;align-items:flex-end;gap:32px;flex-wrap:wrap;}
+  .hero-tag{display:inline-flex;align-items:center;gap:6px;background:#fff;border:1px solid var(--border-dark);padding:5px 12px;border-radius:100px;font-size:.75rem;font-weight:600;color:var(--ink);margin-bottom:16px;}
+  .hero h1{font-family:var(--font-head);font-size:2.6rem;font-weight:900;letter-spacing:-1.5px;line-height:1.1;margin-bottom:14px;}
+  .hero h1 span{color:var(--green);}
+  .hero p{color:var(--muted);font-size:.975rem;line-height:1.65;max-width:500px;}
+  .hero-right{display:flex;gap:28px;flex-shrink:0;flex-wrap:wrap;}
+  .hero-stat{text-align:center;}
+  .hs-val{font-family:var(--font-head);font-size:2rem;font-weight:900;letter-spacing:-1px;}
+  .hs-val.g{color:var(--green);}
+  .hs-val.y{color:var(--gold);}
+  .hs-val.b{color:var(--blue);}
+  .hs-label{font-size:.72rem;color:var(--muted);font-weight:500;}
+
+  /* ── RATING BAR ── */
+  .rating-bar{border-bottom:1px solid var(--border);background:#fff;}
+  .rating-inner{max-width:1200px;margin:0 auto;padding:24px 48px;display:flex;align-items:center;gap:40px;flex-wrap:wrap;}
+  .overall-score{text-align:center;flex-shrink:0;}
+  .score-big{font-family:var(--font-head);font-size:3.5rem;font-weight:900;letter-spacing:-2px;line-height:1;color:var(--ink);}
+  .score-stars{font-size:1.1rem;margin:4px 0;}
+  .score-count{font-size:.75rem;color:var(--muted);}
+  .rating-breakdown{flex:1;min-width:200px;}
+  .rb-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+  .rb-row:last-child{margin-bottom:0;}
+  .rb-label{font-size:.78rem;font-weight:500;width:40px;flex-shrink:0;}
+  .rb-bar-wrap{flex:1;background:var(--surface);border-radius:100px;height:7px;overflow:hidden;}
+  .rb-bar{height:100%;border-radius:100px;background:var(--gold);}
+  .rb-count{font-size:.75rem;color:var(--muted);width:24px;text-align:right;flex-shrink:0;}
+  .rating-cats{display:flex;gap:16px;flex-wrap:wrap;}
+  .rcat{border:1px solid var(--border);border-radius:10px;padding:14px 18px;text-align:center;min-width:110px;}
+  .rcat-val{font-family:var(--font-head);font-size:1.3rem;font-weight:700;letter-spacing:-.5px;margin-bottom:2px;}
+  .rcat-label{font-size:.7rem;color:var(--muted);font-weight:500;}
+
+  /* ── LAYOUT ── */
+  .main-wrap{max-width:1200px;margin:0 auto;padding:40px 48px;display:grid;grid-template-columns:1fr 380px;gap:32px;align-items:start;}
+
+  /* ── REVIEWS FEED ── */
+  .feed-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px;}
+  .section-title{font-family:var(--font-head);font-size:1.1rem;font-weight:700;letter-spacing:-.3px;}
+  .feed-controls{display:flex;gap:8px;}
+  .ftab{padding:6px 14px;border-radius:100px;border:1.5px solid var(--border);font-size:.78rem;font-weight:500;color:var(--muted);cursor:pointer;background:#fff;font-family:var(--font-body);transition:all .15s;}
+  .ftab:hover{border-color:var(--ink);color:var(--ink);}
+  .ftab.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+
+  /* PINNED */
+  .pinned-card{background:var(--gold-light);border:1px solid #e8d08a;border-radius:12px;padding:22px;margin-bottom:16px;position:relative;}
+  .pin-badge{position:absolute;top:14px;right:14px;background:var(--gold);color:#fff;font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:3px 8px;border-radius:4px;}
+
+  /* REVIEW CARD */
+  .review-card{border:1px solid var(--border);border-radius:12px;padding:22px;margin-bottom:14px;transition:border-color .15s;}
+  .review-card:hover{border-color:var(--border-dark);}
+  .rc-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;gap:12px;}
+  .rc-user{display:flex;align-items:center;gap:12px;}
+  .avatar{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:700;color:#fff;flex-shrink:0;}
+  .av-green{background:#1a7a44;}
+  .av-blue{background:#1a5fa8;}
+  .av-red{background:#c0392b;}
+  .av-purple{background:#6b3fa0;}
+  .av-gold{background:#b07d1a;}
+  .av-ink{background:#111612;}
+  .user-name{font-weight:600;font-size:.88rem;margin-bottom:2px;}
+  .user-meta{font-size:.72rem;color:var(--muted);}
+  .rc-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0;}
+  .stars{font-size:.85rem;}
+  .rc-cat{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:2px 8px;border-radius:4px;}
+  .cat-ui{background:var(--blue-light);color:var(--blue);}
+  .cat-feature{background:var(--green-light);color:var(--green);}
+  .cat-bug{background:var(--red-light);color:var(--red);}
+  .cat-general{background:var(--surface);color:var(--muted);border:1px solid var(--border);}
+  .cat-content{background:var(--purple-light);color:var(--purple);}
+  .review-text{font-size:.875rem;color:var(--ink);line-height:1.65;margin-bottom:14px;}
+  .rc-footer{display:flex;justify-content:space-between;align-items:center;}
+  .helpful-btn{display:flex;align-items:center;gap:5px;background:var(--surface);border:1.5px solid var(--border);padding:5px 12px;border-radius:6px;font-size:.75rem;font-weight:500;cursor:pointer;font-family:var(--font-body);transition:all .12s;color:var(--muted);}
+  .helpful-btn:hover{border-color:var(--green);color:var(--green);}
+  .rc-date{font-size:.72rem;color:var(--muted);}
+  .team-reply{background:var(--green-light);border:1px solid var(--green-mid);border-radius:8px;padding:12px 14px;margin-top:12px;}
+  .reply-head{display:flex;align-items:center;gap:6px;font-size:.72rem;font-weight:700;color:var(--green);margin-bottom:6px;}
+  .reply-text{font-size:.82rem;color:var(--ink);line-height:1.55;}
+
+  /* ── SIDEBAR ── */
+  .sidebar{display:flex;flex-direction:column;gap:20px;}
+
+  /* SUBMIT FORM */
+  .form-card{border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+  .form-card-head{background:var(--surface);border-bottom:1px solid var(--border);padding:16px 20px;}
+  .form-card-title{font-family:var(--font-head);font-size:1rem;font-weight:700;letter-spacing:-.3px;}
+  .form-card-sub{font-size:.75rem;color:var(--muted);margin-top:2px;}
+  .form-body{padding:20px;}
+  .form-group{margin-bottom:14px;}
+  .form-label{font-size:.7rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;margin-bottom:5px;display:block;}
+  .form-group input,.form-group select,.form-group textarea{width:100%;padding:10px 13px;border:1.5px solid var(--border);border-radius:8px;font-family:var(--font-body);font-size:.875rem;color:var(--ink);outline:none;transition:border-color .15s;}
+  .form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--green);}
+  .form-group textarea{resize:vertical;min-height:100px;}
+
+  /* STAR PICKER */
+  .star-picker{display:flex;gap:4px;margin-bottom:14px;}
+  .star-pick{font-size:1.5rem;cursor:pointer;transition:transform .1s;filter:grayscale(1);opacity:.4;}
+  .star-pick:hover,.star-pick.active{filter:none;opacity:1;transform:scale(1.1);}
+
+  .submit-btn{background:var(--green);color:#fff;padding:11px;border-radius:8px;font-weight:600;font-size:.88rem;cursor:pointer;border:none;font-family:var(--font-body);width:100%;}
+  .submit-btn:hover{opacity:.88;}
+
+  /* TIPS CARD */
+  .tips-card{border:1px solid var(--border);border-radius:12px;padding:20px;}
+  .tips-title{font-weight:700;font-size:.88rem;margin-bottom:12px;}
+  .tip-item{display:flex;align-items:flex-start;gap:8px;margin-bottom:10px;font-size:.8rem;color:var(--muted);line-height:1.5;}
+  .tip-item:last-child{margin-bottom:0;}
+  .tip-ico{flex-shrink:0;}
+
+  /* TOP CONTRIBUTORS */
+  .contrib-card{border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+  .contrib-head{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 20px;}
+  .contrib-row{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid var(--border);}
+  .contrib-row:last-child{border-bottom:none;}
+  .contrib-left{display:flex;align-items:center;gap:10px;}
+  .contrib-rank{font-size:.75rem;font-weight:700;color:var(--muted);width:18px;}
+  .contrib-name{font-size:.84rem;font-weight:500;}
+  .contrib-count{font-size:.72rem;color:var(--muted);}
+  .contrib-badge{font-size:.65rem;font-weight:700;padding:2px 7px;border-radius:4px;}
+  .badge-gold{background:var(--gold-light);color:var(--gold);}
+  .badge-silver{background:var(--surface);color:var(--muted);border:1px solid var(--border);}
+  .badge-bronze{background:var(--red-light);color:#a04020;}
+
+  footer{border-top:1px solid var(--border);padding:22px 48px;display:flex;justify-content:space-between;align-items:center;font-size:.775rem;color:var(--muted);margin-top:40px;}
+
+  @keyframes fadeUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+  .hero{animation:fadeUp .4s ease both;}
+  .rating-bar{animation:fadeUp .4s .05s ease both;}
+  .main-wrap{animation:fadeUp .4s .1s ease both;}
+
+  @media(max-width:960px){
+    nav{padding:0 24px;} .nav-links,.live-badge{display:none;} .hamburger{display:flex;}
+    .hero{padding:32px 24px;}
+    .hero-right{display:none;}
+    .rating-inner{padding:20px 24px;gap:20px;}
+    .rating-cats{display:none;}
+    .main-wrap{grid-template-columns:1fr;padding:28px 24px;}
+    footer{padding:16px 24px;flex-direction:column;gap:6px;text-align:center;}
+  }
+  @media(max-width:480px){
+    nav{padding:0 16px;height:56px;} .nav-btn{display:none;}
+    .hero h1{font-size:2rem;}
+    .hero{padding:24px 16px;}
+    .rating-inner{padding:16px;}
+    .main-wrap{padding:20px 16px;}
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="logo">Your<em>Say</em></a>
+  <ul class="nav-links">
+    <li><a href="index.html">Overview</a></li>
+    <li><a href="transactions.html">Transactions</a></li>
+    <li><a href="issues.html">Issues</a></li>
+    <li><a href="reports.html">Reports</a></li>
+    <li><a href="student-guide.html">Student's Guide</a></li>
+    <li><a href="innovation.html">Innovation</a></li>
+    <li><a href="reviews.html" class="active">Reviews</a></li>
+  </ul>
+  <div class="nav-right">
+    <div class="live-badge"><div class="dot"></div> Live</div>
+    <button class="nav-btn">+ Raise Issue</button>
+    <button class="hamburger" onclick="document.querySelector('.mobile-nav').classList.toggle('open')"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div class="mobile-nav">
+  <a href="index.html">Overview</a><a href="transactions.html">Transactions</a><a href="issues.html">Issues</a>
+  <a href="reports.html">Reports</a><a href="student-guide.html">Student's Guide</a>
+  <a href="innovation.html">Innovation</a><a href="reviews.html">Reviews</a>
+  <a href="#" class="mob-btn">+ Raise Issue</a>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div>
+      <div class="hero-tag">💬 Public Feedback</div>
+      <h1>Tell us what<br><span>we can do better.</span></h1>
+      <p>YourSay is built for the public — so the public decides how it improves. Leave a review, suggest a feature, or report something that feels off. All feedback is visible to everyone.</p>
+    </div>
+    <div class="hero-right">
+      <div class="hero-stat"><div class="hs-val g">4.7</div><div class="hs-label">Avg Rating</div></div>
+      <div class="hero-stat"><div class="hs-val y">312</div><div class="hs-label">Reviews</div></div>
+      <div class="hero-stat"><div class="hs-val b">89%</div><div class="hs-label">Positive</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- RATING BAR -->
+<div class="rating-bar">
+  <div class="rating-inner">
+    <div class="overall-score">
+      <div class="score-big">4.7</div>
+      <div class="score-stars">⭐⭐⭐⭐⭐</div>
+      <div class="score-count">Based on 312 reviews</div>
+    </div>
+    <div class="rating-breakdown">
+      <div class="rb-row"><span class="rb-label">5 ★</span><div class="rb-bar-wrap"><div class="rb-bar" style="width:72%"></div></div><span class="rb-count">224</span></div>
+      <div class="rb-row"><span class="rb-label">4 ★</span><div class="rb-bar-wrap"><div class="rb-bar" style="width:18%"></div></div><span class="rb-count">56</span></div>
+      <div class="rb-row"><span class="rb-label">3 ★</span><div class="rb-bar-wrap"><div class="rb-bar" style="width:6%"></div></div><span class="rb-count">19</span></div>
+      <div class="rb-row"><span class="rb-label">2 ★</span><div class="rb-bar-wrap"><div class="rb-bar" style="width:2%"></div></div><span class="rb-count">8</span></div>
+      <div class="rb-row"><span class="rb-label">1 ★</span><div class="rb-bar-wrap"><div class="rb-bar" style="width:1%"></div></div><span class="rb-count">5</span></div>
+    </div>
+    <div class="rating-cats">
+      <div class="rcat"><div class="rcat-val">4.8</div><div class="rcat-label">Design</div></div>
+      <div class="rcat"><div class="rcat-val">4.6</div><div class="rcat-label">Usability</div></div>
+      <div class="rcat"><div class="rcat-val">4.9</div><div class="rcat-label">Transparency</div></div>
+      <div class="rcat"><div class="rcat-val">4.4</div><div class="rcat-label">Features</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main-wrap">
+
+  <!-- LEFT: REVIEWS FEED -->
+  <div>
+    <div class="feed-head">
+      <div class="section-title">All Reviews <span style="color:var(--muted);font-weight:400;font-size:.85rem">(312)</span></div>
+      <div class="feed-controls">
+        <button class="ftab active">All</button>
+        <button class="ftab">UI/Design</button>
+        <button class="ftab">Features</button>
+        <button class="ftab">Content</button>
+      </div>
+    </div>
+
+    <!-- PINNED -->
+    <div class="pinned-card">
+      <span class="pin-badge"> Pinned</span>
+      <div class="rc-top">
+        <div class="rc-user">
+          <div class="avatar av-blue">SN</div>
+          <div>
+            <div class="user-name">Sandeep Nair</div>
+            <div class="user-meta"> Hyderabad · Jun 3, 2026</div>
+          </div>
+        </div>
+        <div class="rc-right">
+          <div class="stars">⭐⭐⭐⭐⭐</div>
+          <span class="rc-cat cat-feature">Feature Request</span>
+        </div>
+      </div>
+      <div class="review-text">The transaction page needs a date range filter — right now I can only filter by type and status but I want to see all transactions from a specific month. Also a print/PDF button for the reports page would be extremely useful for RTI filings. Overall the website is outstanding. Best public accountability platform I've seen in India.</div>
+      <div class="rc-footer">
+        <button class="helpful-btn">👍 Helpful (47)</button>
+        <span class="rc-date">Jun 3, 2026</span>
+      </div>
+      <div class="team-reply">
+        <div class="reply-head"> YourSay Team replied</div>
+        <div class="reply-text">Great suggestion Sandeep! Date range filter is on our roadmap for the next update. PDF export for reports is also noted — we'll push it in the coming weeks. Thank you for the detailed feedback.</div>
+      </div>
+    </div>
+
+    <!-- REVIEW 1 -->
+    <div class="review-card">
+      <div class="rc-top">
+        <div class="rc-user">
+          <div class="avatar av-green">PR</div>
+          <div>
+            <div class="user-name">Priya Reddy</div>
+            <div class="user-meta"> Warangal · Jun 4, 2026</div>
+          </div>
+        </div>
+        <div class="rc-right">
+          <div class="stars">⭐⭐⭐⭐⭐</div>
+          <span class="rc-cat cat-ui">UI / Design</span>
+        </div>
+      </div>
+      <div class="review-text">The website is clean and very easy to read. I especially love the Issues page — the progress bar showing how much has been raised vs the goal is a great touch. The Student's Guide section is something no other platform has. My only suggestion is to add a dark mode option for night-time browsing.</div>
+      <div class="rc-footer">
+        <button class="helpful-btn">👍 Helpful (31)</button>
+        <span class="rc-date">Jun 4, 2026</span>
+      </div>
+    </div>
+
+    <!-- REVIEW 2 -->
+    <div class="review-card">
+      <div class="rc-top">
+        <div class="rc-user">
+          <div class="avatar av-red">MK</div>
+          <div>
+            <div class="user-name">Mohammed K.</div>
+            <div class="user-meta"> Nizamabad · Jun 2, 2026</div>
+          </div>
+        </div>
+        <div class="rc-right">
+          <div class="stars">⭐⭐⭐⭐</div>
+          <span class="rc-cat cat-feature">Feature Request</span>
+        </div>
+      </div>
+      <div class="review-text">Really glad a platform like this exists. Transparency in fund usage is something India desperately needs. I'd love to see push notifications or email alerts when an issue I voted for gets funded or completed. Also a Telugu language option would help reach more people in Telangana who aren't comfortable in English.</div>
+      <div class="rc-footer">
+        <button class="helpful-btn">👍 Helpful (24)</button>
+        <span class="rc-date">Jun 2, 2026</span>
+      </div>
+    </div>
+
+    <!-- REVIEW 3 -->
+    <div class="review-card">
+      <div class="rc-top">
+        <div class="rc-user">
+          <div class="avatar av-purple">AS</div>
+          <div>
+            <div class="user-name">Ananya Sharma</div>
+            <div class="user-meta"> Secunderabad · Jun 1, 2026</div>
+          </div>
+        </div>
+        <div class="rc-right">
+          <div class="stars">⭐⭐⭐⭐⭐</div>
+          <span class="rc-cat cat-content">Content</span>
+        </div>
+      </div>
+      <div class="review-text">The Innovation page is such a unique idea. I submitted my project and it went live within a day. Already got 3 people reaching out to collaborate. This page alone makes YourSay different from anything else out there. Please add a comments section on each innovation card so people can give feedback directly.</div>
+      <div class="rc-footer">
+        <button class="helpful-btn">👍 Helpful (18)</button>
+        <span class="rc-date">Jun 1, 2026</span>
+      </div>
+    </div>
+
+    <!-- REVIEW 4 -->
+    <div class="review-card">
+      <div class="rc-top">
+        <div class="rc-user">
+          <div class="avatar av-gold">VR</div>
+          <div>
+            <div class="user-name">Vikram R.</div>
+            <div class="user-meta"> Karimnagar · May 30, 2026</div>
+          </div>
+        </div>
+        <div class="rc-right">
+          <div class="stars">⭐⭐⭐</div>
+          <span class="rc-cat cat-bug">Bug Report</span>
+        </div>
+      </div>
+      <div class="review-text">On mobile the transaction table columns overlap a bit on small screens. Design is good overall but the nav menu took me a moment to find on mobile. Also when I tap the vote button there's no confirmation — I couldn't tell if my vote was counted. These are small things but they affect trust.</div>
+      <div class="rc-footer">
+        <button class="helpful-btn">👍 Helpful (11)</button>
+        <span class="rc-date">May 30, 2026</span>
+      </div>
+      <div class="team-reply">
+        <div class="reply-head"> YourSay Team replied</div>
+        <div class="reply-text">Thank you Vikram! Vote confirmation feedback is being added in the next JS update. Mobile nav improvements are in progress. Really appreciate you flagging these — this is exactly the kind of feedback that makes the platform better.</div>
+      </div>
+    </div>
+
+    <!-- REVIEW 5 -->
+    <div class="review-card">
+      <div class="rc-top">
+        <div class="rc-user">
+          <div class="avatar av-ink">FH</div>
+          <div>
+            <div class="user-name">Fatima H.</div>
+            <div class="user-meta"> Hyderabad · May 28, 2026</div>
+          </div>
+        </div>
+        <div class="rc-right">
+          <div class="stars">⭐⭐⭐⭐⭐</div>
+          <span class="rc-cat cat-general">General</span>
+        </div>
+      </div>
+      <div class="review-text">I showed this to my father who was cynical about whether public money transparency was possible online. After spending 10 minutes on the Issues page and seeing the proof uploaded for completed issues, he changed his mind. That's the power of this platform. Keep going. India needs this.</div>
+      <div class="rc-footer">
+        <button class="helpful-btn">👍 Helpful (63)</button>
+        <span class="rc-date">May 28, 2026</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+
+    <!-- SUBMIT FORM -->
+    <div class="form-card">
+      <div class="form-card-head">
+        <div class="form-card-title">Leave a Review</div>
+        <div class="form-card-sub">All reviews are public and read by the team.</div>
+      </div>
+      <div class="form-body">
+        <div class="form-group">
+          <label class="form-label">Your Name</label>
+          <input type="text" placeholder="How you'll appear publicly">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Location (optional)</label>
+          <input type="text" placeholder="City, State">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Feedback Type</label>
+          <select>
+            <option>Select type</option>
+            <option>UI / Design</option>
+            <option>Feature Request</option>
+            <option>Bug Report</option>
+            <option>Content Feedback</option>
+            <option>General Review</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Your Rating</label>
+          <div class="star-picker">
+            <span class="star-pick" onclick="setRating(1)">⭐</span>
+            <span class="star-pick" onclick="setRating(2)">⭐</span>
+            <span class="star-pick" onclick="setRating(3)">⭐</span>
+            <span class="star-pick" onclick="setRating(4)">⭐</span>
+            <span class="star-pick" onclick="setRating(5)">⭐</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Your Review</label>
+          <textarea placeholder="What do you think? What would make YourSay better? Any issues you noticed?"></textarea>
+        </div>
+        <button class="submit-btn">Submit Review</button>
+      </div>
+    </div>
+
+    <!-- TIPS -->
+    <div class="tips-card">
+      <div class="tips-title"> What makes a good review?</div>
+      <div class="tip-item"><span class="tip-ico">✅</span><span>Be specific — mention the exact page or feature you're talking about</span></div>
+      <div class="tip-item"><span class="tip-ico">✅</span><span>Constructive is better than critical — suggest what could improve, not just what's wrong</span></div>
+      <div class="tip-item"><span class="tip-ico">✅</span><span>Feature requests are welcome — if something is missing that would help you, tell us</span></div>
+      <div class="tip-item"><span class="tip-ico">❌</span><span>Spam, irrelevant content, or personal attacks will be removed</span></div>
+    </div>
+
+    <!-- TOP CONTRIBUTORS -->
+    <div class="contrib-card">
+      <div class="contrib-head">
+        <div class="section-title" style="font-size:.95rem">Top Reviewers</div>
+      </div>
+      <div class="contrib-row">
+        <div class="contrib-left">
+          <span class="contrib-rank">1</span>
+          <div class="avatar av-blue" style="width:30px;height:30px;font-size:.7rem">SN</div>
+          <div><div class="contrib-name">Sandeep Nair</div><div class="contrib-count">8 reviews · 203 helpful</div></div>
+        </div>
+        <span class="contrib-badge badge-gold"> Gold</span>
+      </div>
+      <div class="contrib-row">
+        <div class="contrib-left">
+          <span class="contrib-rank">2</span>
+          <div class="avatar av-ink" style="width:30px;height:30px;font-size:.7rem">FH</div>
+          <div><div class="contrib-name">Fatima H.</div><div class="contrib-count">5 reviews · 141 helpful</div></div>
+        </div>
+        <span class="contrib-badge badge-silver"> Silver</span>
+      </div>
+      <div class="contrib-row">
+        <div class="contrib-left">
+          <span class="contrib-rank">3</span>
+          <div class="avatar av-green" style="width:30px;height:30px;font-size:.7rem">PR</div>
+          <div><div class="contrib-name">Priya Reddy</div><div class="contrib-count">4 reviews · 98 helpful</div></div>
+        </div>
+        <span class="contrib-badge badge-bronze"> Bronze</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<footer>
+  <div>© 2026 YourSay — Public Fund Transparency Platform</div>
+  <div> All transactions are publicly audited and immutable</div>
+</footer>
+
+<script>
+  // Simple star rating interaction — no library needed
+  function setRating(n){
+    const stars = document.querySelectorAll('.star-pick');
+    stars.forEach((s,i) => {
+      s.classList.toggle('active', i < n);
+    });
+  }
+
+  // FAQ toggle (reusable for other pages)
+  document.querySelectorAll('.faq-q').forEach(q => {
+    q.addEventListener('click', () => {
+      q.closest('.faq-item').classList.toggle('open');
+    });
+  });
+</script>
+<script src="app.js"></script>
+<script src="reviews.js"></script>
+</body>
+</html>

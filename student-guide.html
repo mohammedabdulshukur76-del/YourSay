@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student's Guide — YourSay</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700;900&family=Epilogue:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#ffffff;--surface:#f7f8f6;--border:#e8ebe7;--border-dark:#d0d5ce;--ink:#111612;--muted:#8a958a;--green:#1a7a44;--green-light:#edf7f1;--green-mid:#c2e8d0;--red:#c0392b;--red-light:#fdf0ee;--gold:#b07d1a;--gold-light:#fdf5e0;--blue:#1a5fa8;--blue-light:#e8f0fb;--font-head:'Fraunces',serif;--font-body:'Epilogue',sans-serif;}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--ink);font-family:var(--font-body);min-height:100vh;overflow-x:hidden;}
+
+  nav{position:sticky;top:0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:0 48px;height:64px;background:#fff;border-bottom:1px solid var(--border);}
+  .logo{font-family:var(--font-head);font-size:1.35rem;font-weight:900;color:var(--ink);letter-spacing:-.5px;flex-shrink:0;text-decoration:none;}
+  .logo em{font-style:normal;color:var(--green);}
+  .nav-links{display:flex;gap:2px;list-style:none;}
+  .nav-links a{color:var(--muted);text-decoration:none;font-size:.875rem;font-weight:500;padding:7px 13px;border-radius:6px;transition:all .15s;white-space:nowrap;}
+  .nav-links a:hover,.nav-links a.active{color:var(--ink);background:var(--surface);}
+  .nav-right{display:flex;align-items:center;gap:10px;flex-shrink:0;}
+  .live-badge{display:flex;align-items:center;gap:6px;font-size:.72rem;font-weight:600;color:var(--green);background:var(--green-light);border:1px solid var(--green-mid);padding:5px 10px;border-radius:100px;}
+  .dot{width:6px;height:6px;background:var(--green);border-radius:50%;animation:blink 1.4s infinite;}
+  @keyframes blink{0%,100%{opacity:1;}50%{opacity:.2;}}
+  .nav-btn{background:var(--ink);color:#fff;padding:8px 16px;border-radius:7px;font-weight:600;font-size:.83rem;cursor:pointer;border:none;font-family:var(--font-body);}
+  .hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none;padding:4px;}
+  .hamburger span{display:block;width:22px;height:2px;background:var(--ink);border-radius:2px;}
+  .mobile-nav{display:none;flex-direction:column;background:#fff;border-bottom:1px solid var(--border);padding:12px 20px 16px;gap:2px;}
+  .mobile-nav a{color:var(--ink);text-decoration:none;font-size:.95rem;font-weight:500;padding:10px 12px;border-radius:7px;}
+  .mobile-nav .mob-btn{background:var(--ink);color:#fff;text-align:center;padding:11px;border-radius:7px;margin-top:6px;font-weight:600;}
+  .mobile-nav.open{display:flex;}
+
+  /* HERO */
+  .student-hero{background:var(--green-light);border-bottom:1px solid var(--green-mid);padding:52px 48px;}
+  .student-hero-inner{max-width:1200px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;gap:40px;flex-wrap:wrap;}
+  .sh-tag{display:inline-flex;align-items:center;gap:6px;background:#fff;border:1px solid var(--green-mid);padding:5px 12px;border-radius:100px;font-size:.75rem;font-weight:600;color:var(--green);margin-bottom:16px;}
+  .student-hero h1{font-family:var(--font-head);font-size:2.6rem;font-weight:900;letter-spacing:-1.5px;line-height:1.1;margin-bottom:14px;max-width:500px;}
+  .student-hero h1 span{color:var(--green);}
+  .student-hero p{color:var(--ink);opacity:.7;font-size:.975rem;line-height:1.65;max-width:480px;}
+  .hero-art{font-size:5rem;flex-shrink:0;}
+
+  /* CONTENT */
+  .content{max-width:1200px;margin:0 auto;padding:48px;}
+
+  /* HOW IT WORKS */
+  .how-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:48px;}
+  .how-card{border:1px solid var(--border);border-radius:12px;padding:24px;}
+  .how-num{width:36px;height:36px;border-radius:8px;background:var(--ink);color:#fff;font-family:var(--font-head);font-size:1rem;font-weight:700;display:flex;align-items:center;justify-content:center;margin-bottom:14px;}
+  .how-title{font-family:var(--font-head);font-size:1rem;font-weight:700;margin-bottom:8px;letter-spacing:-.2px;}
+  .how-desc{font-size:.84rem;color:var(--muted);line-height:1.6;}
+
+  /* RESOURCES */
+  .section-title{font-family:var(--font-head);font-size:1.2rem;font-weight:700;letter-spacing:-.3px;margin-bottom:20px;}
+  .resources-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:48px;}
+  .res-card{border:1px solid var(--border);border-radius:12px;padding:22px;text-decoration:none;color:var(--ink);transition:border-color .15s,box-shadow .15s;display:block;}
+  .res-card:hover{border-color:var(--green);box-shadow:0 4px 16px rgba(0,0,0,.06);}
+  .res-icon{font-size:1.8rem;margin-bottom:12px;}
+  .res-title{font-weight:600;font-size:.9rem;margin-bottom:6px;}
+  .res-desc{font-size:.8rem;color:var(--muted);line-height:1.5;margin-bottom:12px;}
+  .res-link{font-size:.78rem;color:var(--green);font-weight:600;}
+
+  /* FAQ */
+  .faq-section{margin-bottom:48px;}
+  .faq-item{border:1px solid var(--border);border-radius:10px;margin-bottom:10px;overflow:hidden;}
+  .faq-q{display:flex;justify-content:space-between;align-items:center;padding:18px 20px;cursor:pointer;font-weight:600;font-size:.9rem;transition:background .12s;gap:12px;}
+  .faq-q:hover{background:var(--surface);}
+  .faq-arrow{font-size:.8rem;color:var(--muted);flex-shrink:0;transition:transform .2s;}
+  .faq-a{padding:0 20px 18px;font-size:.85rem;color:var(--muted);line-height:1.65;border-top:1px solid var(--border);}
+  /* Toggle via checkbox hack */
+  .faq-toggle{display:none;}
+  .faq-toggle:checked ~ .faq-item-body .faq-a{display:block;}
+  .faq-toggle:checked ~ .faq-q .faq-arrow{transform:rotate(180deg);}
+  .faq-item-body .faq-a{display:none;}
+  .faq-item.open .faq-a{display:block;}
+  .faq-item.open .faq-arrow{transform:rotate(180deg);}
+  .faq-item.open .faq-q{background:var(--surface);}
+
+  /* CONTACT */
+  .contact-section{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:36px;display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:start;}
+  .contact-left h2{font-family:var(--font-head);font-size:1.4rem;font-weight:900;letter-spacing:-.5px;margin-bottom:10px;}
+  .contact-left p{color:var(--muted);font-size:.88rem;line-height:1.65;margin-bottom:20px;}
+  .contact-ways{display:flex;flex-direction:column;gap:12px;}
+  .contact-way{display:flex;align-items:center;gap:12px;font-size:.85rem;}
+  .cw-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;}
+  .cw-icon.g{background:var(--green-light);}
+  .cw-icon.b{background:var(--blue-light);}
+  .cw-icon.y{background:var(--gold-light);}
+  .form-group{margin-bottom:14px;}
+  .form-label{font-size:.72rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;margin-bottom:5px;display:block;}
+  .form-group input,.form-group select,.form-group textarea{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:var(--font-body);font-size:.875rem;color:var(--ink);outline:none;transition:border-color .15s;}
+  .form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--green);}
+  .form-group textarea{resize:vertical;min-height:80px;}
+  .submit-btn{background:var(--green);color:#fff;padding:12px;border-radius:8px;font-weight:600;font-size:.9rem;cursor:pointer;border:none;font-family:var(--font-body);width:100%;}
+
+  footer{border-top:1px solid var(--border);padding:22px 48px;display:flex;justify-content:space-between;align-items:center;font-size:.775rem;color:var(--muted);margin-top:40px;}
+
+  @keyframes fadeUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+  .student-hero{animation:fadeUp .4s ease both;}
+  .content{animation:fadeUp .4s .1s ease both;}
+
+  @media(max-width:960px){
+    nav{padding:0 24px;} .nav-links,.live-badge{display:none;} .hamburger{display:flex;}
+    .student-hero{padding:32px 24px;}
+    .hero-art{display:none;}
+    .content{padding:28px 24px;}
+    .how-grid{grid-template-columns:1fr;}
+    .resources-grid{grid-template-columns:1fr 1fr;}
+    .contact-section{grid-template-columns:1fr;}
+    footer{padding:16px 24px;flex-direction:column;gap:6px;text-align:center;}
+  }
+  @media(max-width:480px){
+    nav{padding:0 16px;height:56px;} .nav-btn{display:none;}
+    .student-hero h1{font-size:2rem;}
+    .resources-grid{grid-template-columns:1fr;}
+    .content{padding:20px 16px;}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo">Your<em>Say</em></a>
+  <ul class="nav-links">
+    <li><a href="index.html">Overview</a></li>
+    <li><a href="transactions.html">Transactions</a></li>
+    <li><a href="issues.html">Issues</a></li>
+    <li><a href="reports.html">Reports</a></li>
+    <li><a href="student-guide.html" class="active">Student's Guide</a></li>
+    <li><a href="innovation.html">Innovation</a></li>
+    <li><a href="reviews.html">Reviews</a></li>
+  </ul>
+  <div class="nav-right">
+    <div class="live-badge"><div class="dot"></div> Live</div>
+    <button class="nav-btn">+ Raise Issue</button>
+    <button class="hamburger" onclick="document.querySelector('.mobile-nav').classList.toggle('open')"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div class="mobile-nav">
+  <a href="index.html">Overview</a><a href="transactions.html">Transactions</a><a href="issues.html">Issues</a>
+  <a href="reports.html">Reports</a><a href="student-guide.html">Student's Guide</a><a href="innovation.html">Innovation</a>
+  <a href="reviews.html">Reviews</a>
+  <a href="#" class="mob-btn">+ Raise Issue</a>
+</div>
+
+<div class="student-hero">
+  <div class="student-hero-inner">
+    <div>
+      <div class="sh-tag">🎓 For Students</div>
+      <h1>Your voice.<br><span>Your city.</span></h1>
+      <p>YourSay helps students understand how public funds work, raise issues in their schools and communities, and access scholarships and support resources.</p>
+    </div>
+    <div class="hero-art">🎓</div>
+  </div>
+</div>
+
+<div class="content">
+
+  <!-- HOW IT WORKS -->
+  <div class="section-title">How YourSay Works for Students</div>
+  <div class="how-grid">
+    <div class="how-card">
+      <div class="how-num">1</div>
+      <div class="how-title">Spot a Problem</div>
+      <div class="how-desc">See a broken desk in your classroom? No drinking water? Dangerous road near your school? You can raise it on YourSay — anyone can submit an issue.</div>
+    </div>
+    <div class="how-card">
+      <div class="how-num">2</div>
+      <div class="how-title">Community Votes</div>
+      <div class="how-desc">Once submitted, the public can vote on your issue. The more votes it gets, the higher priority it receives for funding. Your friends, family, anyone can support it.</div>
+    </div>
+    <div class="how-card">
+      <div class="how-num">3</div>
+      <div class="how-title">See It Fixed — With Proof</div>
+      <div class="how-desc">When an issue is resolved, photos, videos, and reviews are uploaded publicly. Every rupee spent is shown. No guessing where the money went.</div>
+    </div>
+  </div>
+
+  <!-- RESOURCES -->
+  <div class="section-title">Student Resources</div>
+  <div class="resources-grid">
+    <a href="#" class="res-card">
+      <div class="res-icon">🏛️</div>
+      <div class="res-title">Government Scholarships</div>
+      <div class="res-desc">Find Telangana state scholarships, ePass, and central government schemes you're eligible for based on your category and course.</div>
+      <div class="res-link">Explore scholarships →</div>
+    </a>
+    <a href="#" class="res-card">
+      <div class="res-icon">📋</div>
+      <div class="res-title">How to File a Grievance</div>
+      <div class="res-desc">Step-by-step guide on filing academic or institutional complaints — whether it's about a paper leak, college issues, or hostel problems.</div>
+      <div class="res-link">Read the guide →</div>
+    </a>
+    <a href="#" class="res-card">
+      <div class="res-icon">💸</div>
+      <div class="res-title">Apply for Fee Reimbursement</div>
+      <div class="res-desc">Telangana's fee reimbursement scheme for BC, SC, ST students. Check eligibility, required documents, and how to apply online.</div>
+      <div class="res-link">Check eligibility →</div>
+    </a>
+    <a href="#" class="res-card">
+      <div class="res-icon">🏫</div>
+      <div class="res-title">Report School Infrastructure Issues</div>
+      <div class="res-desc">No toilets, broken furniture, leaking roofs — raise infrastructure problems in your school and get them seen by the right people.</div>
+      <div class="res-link">Raise an issue →</div>
+    </a>
+    <a href="#" class="res-card">
+      <div class="res-icon">📰</div>
+      <div class="res-title">Know Your Rights</div>
+      <div class="res-desc">Right to Education, RTI, anti-ragging policies, reservation rights — understand what you're entitled to as a student in India.</div>
+      <div class="res-link">Learn more →</div>
+    </a>
+    <a href="innovation.html" class="res-card">
+      <div class="res-icon">💡</div>
+      <div class="res-title">Showcase Your Innovation</div>
+      <div class="res-desc">Built something cool? A project, an app, a solution to a real problem? Submit it to the Innovation page and get noticed.</div>
+      <div class="res-link">Go to Innovation →</div>
+    </a>
+  </div>
+
+  <!-- FAQ -->
+  <div class="faq-section">
+    <div class="section-title">Frequently Asked Questions</div>
+
+    <div class="faq-item open">
+      <div class="faq-q">
+        Can any student raise an issue on YourSay?
+        <span class="faq-arrow">▼</span>
+      </div>
+      <div class="faq-item-body">
+        <div class="faq-a">Yes. Any student or citizen can submit an issue. You don't need to register. Just fill in the issue title, location, category, and description. The admin team reviews it within 48 hours before it goes live for public voting.</div>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">
+        What happens after I submit an issue?
+        <span class="faq-arrow">▼</span>
+      </div>
+      <div class="faq-item-body">
+        <div class="faq-a">After submission, the YourSay team reviews it for validity within 48 hours. If approved, it goes live on the Issues page where the public can vote on it. High-voted issues are prioritized for fund allocation by the admin panel.</div>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">
+        How do I know the money was actually used correctly?
+        <span class="faq-arrow">▼</span>
+      </div>
+      <div class="faq-item-body">
+        <div class="faq-a">Every transaction on YourSay is publicly visible. When an issue is resolved, photos, videos, and a review are uploaded to the issue's page. The transaction showing how much was spent is also linked. Nothing is hidden.</div>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">
+        Is YourSay a government website?
+        <span class="faq-arrow">▼</span>
+      </div>
+      <div class="faq-item-body">
+        <div class="faq-a">No. YourSay is an independent public transparency platform. It is not affiliated with any government body. Our goal is to hold institutions accountable by making fund movements and issue resolutions visible to everyone.</div>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">
+        Can I donate to a specific issue I care about?
+        <span class="faq-arrow">▼</span>
+      </div>
+      <div class="faq-item-body">
+        <div class="faq-a">Yes — this feature is coming soon. You will be able to directly contribute to any open issue on the platform. All contributions will be tracked publicly and refunded if the issue goal is not met within 60 days.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTACT -->
+  <div class="contact-section">
+    <div class="contact-left">
+      <h2>Need help? Talk to us.</h2>
+      <p>If you're a student facing an issue that needs urgent attention, or if you need help understanding how to use YourSay, reach out.</p>
+      <div class="contact-ways">
+        <div class="contact-way"><div class="cw-icon g"></div><div>help@YourSay.in</div></div>
+        <div class="contact-way"><div class="cw-icon b"></div><div>WhatsApp helpline: +91 98765 43210</div></div>
+        <div class="contact-way"><div class="cw-icon y"></div><div>Mon–Sat, 9am – 6pm IST</div></div>
+      </div>
+    </div>
+    <div class="contact-right">
+      <div class="form-group"><label class="form-label">Your Name</label><input type="text" placeholder="Full name"></div>
+      <div class="form-group"><label class="form-label">Email or Phone</label><input type="text" placeholder="Contact info"></div>
+      <div class="form-group"><label class="form-label">Topic</label><select><option>Select a topic</option><option>Raise an issue</option><option>Scholarship help</option><option>Fee reimbursement</option><option>Grievance filing</option><option>Other</option></select></div>
+      <div class="form-group"><label class="form-label">Message</label><textarea placeholder="Describe what you need help with…"></textarea></div>
+      <button class="submit-btn">Send Message</button>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <div>© 2026 YourSay — Public Fund Transparency Platform</div>
+  <div> All transactions are publicly audited and immutable</div>
+</footer>
+<script src="app.js"></script>
+<script src="student-guide.js"></script>
+</body>
+</html>

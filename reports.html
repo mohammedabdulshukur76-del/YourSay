@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reports — YourSay</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700;900&family=Epilogue:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#ffffff;--surface:#f7f8f6;--border:#e8ebe7;--border-dark:#d0d5ce;--ink:#111612;--muted:#8a958a;--green:#1a7a44;--green-light:#edf7f1;--green-mid:#c2e8d0;--red:#c0392b;--red-light:#fdf0ee;--gold:#b07d1a;--gold-light:#fdf5e0;--blue:#1a5fa8;--blue-light:#e8f0fb;--font-head:'Fraunces',serif;--font-body:'Epilogue',sans-serif;}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--ink);font-family:var(--font-body);min-height:100vh;overflow-x:hidden;}
+
+  nav{position:sticky;top:0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:0 48px;height:64px;background:#fff;border-bottom:1px solid var(--border);}
+  .logo{font-family:var(--font-head);font-size:1.35rem;font-weight:900;color:var(--ink);letter-spacing:-.5px;flex-shrink:0;text-decoration:none;}
+  .logo em{font-style:normal;color:var(--green);}
+  .nav-links{display:flex;gap:2px;list-style:none;}
+  .nav-links a{color:var(--muted);text-decoration:none;font-size:.875rem;font-weight:500;padding:7px 13px;border-radius:6px;transition:all .15s;white-space:nowrap;}
+  .nav-links a:hover,.nav-links a.active{color:var(--ink);background:var(--surface);}
+  .nav-right{display:flex;align-items:center;gap:10px;flex-shrink:0;}
+  .live-badge{display:flex;align-items:center;gap:6px;font-size:.72rem;font-weight:600;color:var(--green);background:var(--green-light);border:1px solid var(--green-mid);padding:5px 10px;border-radius:100px;}
+  .dot{width:6px;height:6px;background:var(--green);border-radius:50%;animation:blink 1.4s infinite;}
+  @keyframes blink{0%,100%{opacity:1;}50%{opacity:.2;}}
+  .nav-btn{background:var(--ink);color:#fff;padding:8px 16px;border-radius:7px;font-weight:600;font-size:.83rem;cursor:pointer;border:none;font-family:var(--font-body);}
+  .hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none;padding:4px;}
+  .hamburger span{display:block;width:22px;height:2px;background:var(--ink);border-radius:2px;}
+  .mobile-nav{display:none;flex-direction:column;background:#fff;border-bottom:1px solid var(--border);padding:12px 20px 16px;gap:2px;}
+  .mobile-nav a{color:var(--ink);text-decoration:none;font-size:.95rem;font-weight:500;padding:10px 12px;border-radius:7px;}
+  .mobile-nav .mob-btn{background:var(--ink);color:#fff;text-align:center;padding:11px;border-radius:7px;margin-top:6px;font-weight:600;}
+  .mobile-nav.open{display:flex;}
+
+  .page-header{background:var(--surface);border-bottom:1px solid var(--border);padding:36px 48px;}
+  .page-header-inner{max-width:1200px;margin:0 auto;}
+  .breadcrumb{font-size:.75rem;color:var(--muted);margin-bottom:10px;}
+  .breadcrumb a{color:var(--green);text-decoration:none;}
+  .page-header h1{font-family:var(--font-head);font-size:2rem;font-weight:900;letter-spacing:-1px;margin-bottom:6px;}
+  .page-header p{color:var(--muted);font-size:.9rem;}
+
+  .content{max-width:1200px;margin:0 auto;padding:36px 48px;}
+
+  /* SUMMARY CARDS */
+  .summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:36px;}
+  .sum-card{border:1px solid var(--border);border-radius:12px;padding:20px;}
+  .sum-icon{font-size:1.4rem;margin-bottom:10px;}
+  .sum-label{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;font-weight:600;margin-bottom:6px;}
+  .sum-val{font-family:var(--font-head);font-size:1.7rem;font-weight:700;letter-spacing:-1px;margin-bottom:4px;}
+  .sum-val.g{color:var(--green);}
+  .sum-val.r{color:var(--red);}
+  .sum-val.y{color:var(--gold);}
+  .sum-val.b{color:var(--blue);}
+  .sum-change{font-size:.75rem;color:var(--muted);}
+  .sum-change.up{color:var(--green);}
+
+  /* CHARTS SECTION */
+  .charts-grid{display:grid;grid-template-columns:2fr 1fr;gap:24px;margin-bottom:36px;}
+
+  .chart-card{border:1px solid var(--border);border-radius:12px;padding:24px;}
+  .chart-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;}
+  .chart-title{font-family:var(--font-head);font-size:1rem;font-weight:700;letter-spacing:-.3px;}
+  .chart-period{font-size:.75rem;color:var(--muted);background:var(--surface);border:1px solid var(--border);padding:4px 10px;border-radius:6px;}
+
+  /* BAR CHART */
+  .bar-chart{display:flex;align-items:flex-end;gap:10px;height:160px;padding-bottom:24px;position:relative;}
+  .bar-chart::after{content:'';position:absolute;bottom:24px;left:0;right:0;height:1px;background:var(--border);}
+  .bar-group{display:flex;flex-direction:column;align-items:center;gap:6px;flex:1;}
+  .bar-wrap{display:flex;gap:3px;align-items:flex-end;height:130px;width:100%;}
+  .bar{border-radius:4px 4px 0 0;flex:1;min-height:4px;transition:opacity .2s;}
+  .bar:hover{opacity:.8;}
+  .bar.income{background:var(--green);}
+  .bar.expense{background:var(--red-light);border:1px solid #e8b4b0;}
+  .bar-label{font-size:.68rem;color:var(--muted);font-weight:500;}
+
+  .bar-legend{display:flex;gap:16px;margin-bottom:16px;}
+  .legend-item{display:flex;align-items:center;gap:6px;font-size:.75rem;color:var(--muted);}
+  .legend-dot{width:10px;height:10px;border-radius:2px;}
+  .legend-dot.g{background:var(--green);}
+  .legend-dot.r{background:#e8b4b0;border:1px solid #e8b4b0;}
+
+  /* PIE / CATEGORY CHART */
+  .cat-list{display:flex;flex-direction:column;gap:14px;}
+  .cat-item{}
+  .cat-top{display:flex;justify-content:space-between;margin-bottom:6px;}
+  .cat-name{font-size:.83rem;font-weight:500;}
+  .cat-pct{font-size:.78rem;color:var(--muted);}
+  .cat-bar-wrap{background:var(--surface);border-radius:100px;height:6px;overflow:hidden;}
+  .cat-bar{height:100%;border-radius:100px;}
+
+  /* REPORTS DOWNLOAD LIST */
+  .reports-list-section{margin-bottom:36px;}
+  .section-title{font-family:var(--font-head);font-size:1.1rem;font-weight:700;letter-spacing:-.3px;margin-bottom:16px;}
+  .reports-list{border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+  .report-row{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border);gap:12px;transition:background .12s;}
+  .report-row:last-child{border-bottom:none;}
+  .report-row:hover{background:var(--surface);}
+  .report-left{display:flex;align-items:center;gap:14px;}
+  .report-ico{width:38px;height:38px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;}
+  .report-ico.pdf{background:var(--red-light);}
+  .report-ico.xl{background:var(--green-light);}
+  .report-name{font-size:.875rem;font-weight:500;margin-bottom:2px;}
+  .report-meta{font-size:.72rem;color:var(--muted);}
+  .dl-btn{background:var(--surface);border:1.5px solid var(--border-dark);color:var(--ink);padding:7px 14px;border-radius:6px;font-size:.78rem;font-weight:600;cursor:pointer;font-family:var(--font-body);white-space:nowrap;transition:border-color .15s;}
+  .dl-btn:hover{border-color:var(--green);color:var(--green);}
+
+  footer{border-top:1px solid var(--border);padding:22px 48px;display:flex;justify-content:space-between;align-items:center;font-size:.775rem;color:var(--muted);}
+
+  @keyframes fadeUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+  .page-header{animation:fadeUp .4s ease both;}
+  .content{animation:fadeUp .4s .1s ease both;}
+
+  @media(max-width:960px){
+    nav{padding:0 24px;} .nav-links,.live-badge{display:none;} .hamburger{display:flex;}
+    .page-header{padding:24px;}
+    .content{padding:24px;}
+    .summary-grid{grid-template-columns:1fr 1fr;}
+    .charts-grid{grid-template-columns:1fr;}
+    footer{padding:16px 24px;flex-direction:column;gap:6px;text-align:center;}
+  }
+  @media(max-width:480px){
+    nav{padding:0 16px;height:56px;} .nav-btn{display:none;}
+    .summary-grid{grid-template-columns:1fr 1fr;}
+    .sum-val{font-size:1.3rem;}
+    .bar-chart{height:120px;}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo">Your<em>Say</em></a>
+  <ul class="nav-links">
+    <li><a href="index.html">Overview</a></li>
+    <li><a href="transactions.html">Transactions</a></li>
+    <li><a href="issues.html">Issues</a></li>
+    <li><a href="reports.html" class="active">Reports</a></li>
+    <li><a href="student-guide.html">Student's Guide</a></li>
+    <li><a href="innovation.html">Innovation</a></li>
+    <li><a href="reviews.html">Reviews</a></li>
+  </ul>
+  <div class="nav-right">
+    <div class="live-badge"><div class="dot"></div> Live</div>
+    <button class="nav-btn">+ Raise Issue</button>
+    <button class="hamburger" onclick="document.querySelector('.mobile-nav').classList.toggle('open')"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div class="mobile-nav">
+  <a href="index.html">Overview</a><a href="transactions.html">Transactions</a><a href="issues.html">Issues</a>
+  <a href="reports.html">Reports</a><a href="student-guide.html">Student's Guide</a><a href="innovation.html">Innovation</a>
+  <a href="reviews.html">Reviews</a>
+  <a href="#" class="mob-btn">+ Raise Issue</a>
+</div>
+
+<div class="page-header">
+  <div class="page-header-inner">
+    <div class="breadcrumb"><a href="index.html">Home</a> / Reports</div>
+    <h1>Fund Reports</h1>
+    <p>Complete financial summaries, spending breakdowns, and downloadable audit reports.</p>
+  </div>
+</div>
+
+<div class="content">
+
+  <div class="summary-grid">
+    <div class="sum-card"><div class="sum-icon">📈</div><div class="sum-label">Total Inflow</div><div class="sum-val g">₹48.6L</div><div class="sum-change up">↑ 18% vs last quarter</div></div>
+    <div class="sum-card"><div class="sum-icon">📉</div><div class="sum-label">Total Outflow</div><div class="sum-val r">₹31.2L</div><div class="sum-change up">↓ 6% vs last quarter</div></div>
+    <div class="sum-card"><div class="sum-icon">🏦</div><div class="sum-label">Net Balance</div><div class="sum-val y">₹17.4L</div><div class="sum-change">As of Jun 5, 2026</div></div>
+    <div class="sum-card"><div class="sum-icon">✅</div><div class="sum-label">Issues Resolved</div><div class="sum-val b">142</div><div class="sum-change up">↑ 24 this quarter</div></div>
+  </div>
+
+  <div class="charts-grid">
+
+    <!-- BAR CHART -->
+    <div class="chart-card">
+      <div class="chart-head">
+        <div class="chart-title">Monthly Income vs Expenses</div>
+        <span class="chart-period">Jan – Jun 2026</span>
+      </div>
+      <div class="bar-legend">
+        <div class="legend-item"><div class="legend-dot g"></div>Income</div>
+        <div class="legend-item"><div class="legend-dot r"></div>Expenses</div>
+      </div>
+      <div class="bar-chart">
+        <div class="bar-group"><div class="bar-wrap"><div class="bar income" style="height:55%"></div><div class="bar expense" style="height:40%"></div></div><div class="bar-label">Jan</div></div>
+        <div class="bar-group"><div class="bar-wrap"><div class="bar income" style="height:60%"></div><div class="bar expense" style="height:45%"></div></div><div class="bar-label">Feb</div></div>
+        <div class="bar-group"><div class="bar-wrap"><div class="bar income" style="height:70%"></div><div class="bar expense" style="height:55%"></div></div><div class="bar-label">Mar</div></div>
+        <div class="bar-group"><div class="bar-wrap"><div class="bar income" style="height:50%"></div><div class="bar expense" style="height:60%"></div></div><div class="bar-label">Apr</div></div>
+        <div class="bar-group"><div class="bar-wrap"><div class="bar income" style="height:80%"></div><div class="bar expense" style="height:50%"></div></div><div class="bar-label">May</div></div>
+        <div class="bar-group"><div class="bar-wrap"><div class="bar income" style="height:100%"></div><div class="bar expense" style="height:35%"></div></div><div class="bar-label">Jun</div></div>
+      </div>
+    </div>
+
+    <!-- CATEGORY BREAKDOWN -->
+    <div class="chart-card">
+      <div class="chart-head">
+        <div class="chart-title">Spending by Category</div>
+        <span class="chart-period">2026</span>
+      </div>
+      <div class="cat-list">
+        <div class="cat-item">
+          <div class="cat-top"><span class="cat-name">Infrastructure</span><span class="cat-pct">34%</span></div>
+          <div class="cat-bar-wrap"><div class="cat-bar" style="width:34%;background:#1a7a44"></div></div>
+        </div>
+        <div class="cat-item">
+          <div class="cat-top"><span class="cat-name">Healthcare</span><span class="cat-pct">26%</span></div>
+          <div class="cat-bar-wrap"><div class="cat-bar" style="width:26%;background:#c0392b"></div></div>
+        </div>
+        <div class="cat-item">
+          <div class="cat-top"><span class="cat-name">Education</span><span class="cat-pct">18%</span></div>
+          <div class="cat-bar-wrap"><div class="cat-bar" style="width:18%;background:#b07d1a"></div></div>
+        </div>
+        <div class="cat-item">
+          <div class="cat-top"><span class="cat-name">Disaster Relief</span><span class="cat-pct">14%</span></div>
+          <div class="cat-bar-wrap"><div class="cat-bar" style="width:14%;background:#1a5fa8"></div></div>
+        </div>
+        <div class="cat-item">
+          <div class="cat-top"><span class="cat-name">Others</span><span class="cat-pct">8%</span></div>
+          <div class="cat-bar-wrap"><div class="cat-bar" style="width:8%;background:#8a958a"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DOWNLOADABLE REPORTS -->
+  <div class="reports-list-section">
+    <div class="section-title">Downloadable Reports</div>
+    <div class="reports-list">
+      <div class="report-row">
+        <div class="report-left"><div class="report-ico pdf">📄</div><div><div class="report-name">Q2 2026 Full Audit Report</div><div class="report-meta">PDF · 2.4 MB · Published Jun 1, 2026</div></div></div>
+        <button class="dl-btn">⬇ Download</button>
+      </div>
+      <div class="report-row">
+        <div class="report-left"><div class="report-ico xl">📊</div><div><div class="report-name">Q2 2026 Transaction Ledger</div><div class="report-meta">Excel · 840 KB · Published Jun 1, 2026</div></div></div>
+        <button class="dl-btn">⬇ Download</button>
+      </div>
+      <div class="report-row">
+        <div class="report-left"><div class="report-ico pdf">📄</div><div><div class="report-name">Q1 2026 Full Audit Report</div><div class="report-meta">PDF · 1.9 MB · Published Mar 2, 2026</div></div></div>
+        <button class="dl-btn">⬇ Download</button>
+      </div>
+      <div class="report-row">
+        <div class="report-left"><div class="report-ico pdf">📄</div><div><div class="report-name">Annual Report 2025</div><div class="report-meta">PDF · 5.1 MB · Published Jan 15, 2026</div></div></div>
+        <button class="dl-btn">⬇ Download</button>
+      </div>
+      <div class="report-row">
+        <div class="report-left"><div class="report-ico xl">📊</div><div><div class="report-name">Issue Resolution Summary 2025</div><div class="report-meta">Excel · 620 KB · Published Jan 15, 2026</div></div></div>
+        <button class="dl-btn">⬇ Download</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div>© 2026 YourSay — Public Fund Transparency Platform</div>
+  <div> All transactions are publicly audited and immutable</div>
+</footer>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="app.js"></script>
+<script src="reports.js"></script>
+</body>
+</html>
