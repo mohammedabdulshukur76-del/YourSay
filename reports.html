@@ -37,7 +37,6 @@
 
   .content{max-width:1200px;margin:0 auto;padding:36px 48px;}
 
-  /* SUMMARY CARDS */
   .summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:36px;}
   .sum-card{border:1px solid var(--border);border-radius:12px;padding:20px;}
   .sum-icon{font-size:1.4rem;margin-bottom:10px;}
@@ -50,7 +49,6 @@
   .sum-change{font-size:.75rem;color:var(--muted);}
   .sum-change.up{color:var(--green);}
 
-  /* CHARTS SECTION */
   .charts-grid{display:grid;grid-template-columns:2fr 1fr;gap:24px;margin-bottom:36px;}
 
   .chart-card{border:1px solid var(--border);border-radius:12px;padding:24px;}
@@ -58,7 +56,6 @@
   .chart-title{font-family:var(--font-head);font-size:1rem;font-weight:700;letter-spacing:-.3px;}
   .chart-period{font-size:.75rem;color:var(--muted);background:var(--surface);border:1px solid var(--border);padding:4px 10px;border-radius:6px;}
 
-  /* BAR CHART */
   .bar-chart{display:flex;align-items:flex-end;gap:10px;height:160px;padding-bottom:24px;position:relative;}
   .bar-chart::after{content:'';position:absolute;bottom:24px;left:0;right:0;height:1px;background:var(--border);}
   .bar-group{display:flex;flex-direction:column;align-items:center;gap:6px;flex:1;}
@@ -75,7 +72,6 @@
   .legend-dot.g{background:var(--green);}
   .legend-dot.r{background:#e8b4b0;border:1px solid #e8b4b0;}
 
-  /* PIE / CATEGORY CHART */
   .cat-list{display:flex;flex-direction:column;gap:14px;}
   .cat-item{}
   .cat-top{display:flex;justify-content:space-between;margin-bottom:6px;}
@@ -84,7 +80,6 @@
   .cat-bar-wrap{background:var(--surface);border-radius:100px;height:6px;overflow:hidden;}
   .cat-bar{height:100%;border-radius:100px;}
 
-  /* REPORTS DOWNLOAD LIST */
   .reports-list-section{margin-bottom:36px;}
   .section-title{font-family:var(--font-head);font-size:1.1rem;font-weight:700;letter-spacing:-.3px;margin-bottom:16px;}
   .reports-list{border:1px solid var(--border);border-radius:12px;overflow:hidden;}
@@ -167,7 +162,6 @@
 
   <div class="charts-grid">
 
-    <!-- BAR CHART -->
     <div class="chart-card">
       <div class="chart-head">
         <div class="chart-title">Monthly Income vs Expenses</div>
@@ -187,7 +181,6 @@
       </div>
     </div>
 
-    <!-- CATEGORY BREAKDOWN -->
     <div class="chart-card">
       <div class="chart-head">
         <div class="chart-title">Spending by Category</div>
@@ -218,7 +211,6 @@
     </div>
   </div>
 
-  <!-- DOWNLOADABLE REPORTS -->
   <div class="reports-list-section">
     <div class="section-title">Downloadable Reports</div>
     <div class="reports-list">

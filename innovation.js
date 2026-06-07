@@ -1,21 +1,8 @@
-// ============================================================
-//  YourSay — innovation.js  (runs only on innovation.html)
-//  Step 7b: Category filter + Like buttons + Collaboration wall
-// ============================================================
-
 document.addEventListener('DOMContentLoaded', () => {
-
-
-  // ── CATEGORY FILTER TABS ──────────────────────────────────────
-  // Clicking a category tab filters the innovation cards.
-  // We match each card's tag against the selected category.
-
   const filterTabs = document.querySelectorAll('.ftab');
 
   filterTabs.forEach(tab => {
     tab.addEventListener('click', () => {
-
-      // Update active tab
       filterTabs.forEach(t => t.classList.remove('active'));
       tab.classList.add('active');
 
@@ -34,25 +21,14 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-
-  // ── SORT DROPDOWN ─────────────────────────────────────────────
   const sortSelect = document.querySelector('.sort-select');
   if (sortSelect) {
     sortSelect.addEventListener('change', () => {
       showToast('Sorting applied.', 'info');
-      // Full sort logic comes in Django phase when data is dynamic
     });
   }
 
-
-  // ── LIKE BUTTONS ──────────────────────────────────────────────
-  // Each card has a like count. Clicking likes it.
-  // Uses localStorage so your like persists across refreshes.
-  // One like per card per browser.
-
   const likedCards = JSON.parse(localStorage.getItem('yl_liked_innovations')) || {};
-
-  // Featured card like button
   const featuredLike = document.querySelector('.like-btn');
   if (featuredLike) {
     const featuredId = 'featured';
@@ -82,7 +58,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Grid card like counts (shown in .ic-likes)
   document.querySelectorAll('.inno-card').forEach((card, index) => {
     const likeEl = card.querySelector('.ic-likes');
     const cardId = `card-${index}`;
@@ -90,8 +65,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const match = likeEl.textContent.match(/\d+/);
     let count   = match ? parseInt(match[0]) : 0;
-
-    // Restore saved count
     if (likedCards[cardId] !== undefined) {
       count = likedCards[cardId];
       likeEl.textContent = `❤ ${count}`;
@@ -115,13 +88,6 @@ document.addEventListener('DOMContentLoaded', () => {
       showToast('Liked! ❤️', 'success');
     });
   });
-
-
-  // ── COLLABORATION WALL ────────────────────────────────────────
-  // Each innovation card gets a "💬 Collaborate" button.
-  // Clicking it opens a panel below the card where people
-  // can post messages saying they want to work together.
-  // Others can see all collaboration messages.
 
   const collab = JSON.parse(localStorage.getItem('yl_collabs')) || {};
 
@@ -155,14 +121,11 @@ document.addEventListener('DOMContentLoaded', () => {
     `;
   }
 
-  // Add collaborate button + panel to every grid card
   document.querySelectorAll('.inno-card').forEach((card, index) => {
     const cardId    = `inno-${index}`;
     const titleEl   = card.querySelector('.ic-title');
     const cardTitle = titleEl ? titleEl.textContent.trim() : `Innovation ${index+1}`;
     const messages  = collab[cardId] || [];
-
-    // Add "Collaborate" button to card footer
     const footer = card.querySelector('.ic-footer');
     if (footer) {
       const collabBtn = document.createElement('button');
@@ -177,7 +140,6 @@ document.addEventListener('DOMContentLoaded', () => {
       footer.appendChild(collabBtn);
     }
 
-    // Create the collaboration panel (hidden by default)
     const panel = document.createElement('div');
     panel.id    = `collab-panel-${cardId}`;
     panel.style.cssText = `
@@ -225,17 +187,13 @@ document.addEventListener('DOMContentLoaded', () => {
       </div>
     `;
     card.appendChild(panel);
-
-    // Add focus styles
     panel.querySelectorAll('input, textarea').forEach(el => {
       el.addEventListener('focus', () => el.style.borderColor = 'var(--green)');
       el.addEventListener('blur',  () => el.style.borderColor = 'var(--border)');
     });
 
-    // Toggle panel when "Collaborate" button is clicked
     card.querySelector('.collab-trigger')?.addEventListener('click', () => {
       const isHidden = panel.style.display === 'none';
-      // Close all other open panels first
       document.querySelectorAll('[id^="collab-panel-"]').forEach(p => {
         p.style.display = 'none';
       });
@@ -243,7 +201,6 @@ document.addEventListener('DOMContentLoaded', () => {
       if (isHidden) panel.scrollIntoView({ behavior:'smooth', block:'nearest' });
     });
 
-    // Submit collaboration message
     panel.querySelector('.collab-submit')?.addEventListener('click', () => {
       const name    = panel.querySelector('.collab-name')?.value.trim()    || '';
       const contact = panel.querySelector('.collab-contact')?.value.trim() || '';
@@ -259,25 +216,20 @@ document.addEventListener('DOMContentLoaded', () => {
         })
       };
 
-      // Add to DOM
       const msgList = document.getElementById(`collab-msgs-${cardId}`);
       const el      = document.createElement('div');
       el.innerHTML  = buildCollabMessage(newMsg);
-      // Remove the "no collaborators" message if present
       const noMsg = msgList?.querySelector('p');
       if (noMsg) noMsg.remove();
       msgList?.appendChild(el.firstChild);
 
-      // Save to localStorage
       collab[cardId] = collab[cardId] || [];
       collab[cardId].push(newMsg);
       localStorage.setItem('yl_collabs', JSON.stringify(collab));
 
-      // Update button count
       const trigger = card.querySelector('.collab-trigger');
       if (trigger) trigger.innerHTML = `💬 ${collab[cardId].length} interested`;
 
-      // Clear form
       panel.querySelector('.collab-name').value    = '';
       panel.querySelector('.collab-contact').value = '';
       panel.querySelector('.collab-msg').value     = '';
@@ -287,7 +239,6 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
 
-  // ── FEATURED CARD "VIEW PROJECT" BUTTON ──────────────────────
   const viewProjectBtn = document.querySelector('.view-btn');
   if (viewProjectBtn) {
     viewProjectBtn.addEventListener('click', () => {

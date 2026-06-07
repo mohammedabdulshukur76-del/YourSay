@@ -1,21 +1,8 @@
-// ============================================================
-//  YourSay — student-guide.js  (runs only on student-guide.html)
-//  Step 7a: FAQ accordion + Community Help Board
-// ============================================================
-
 document.addEventListener('DOMContentLoaded', () => {
-
-
-  // ── FAQ ACCORDION ─────────────────────────────────────────────
-  // Each FAQ item toggles open/closed when clicked.
-  // We add a smooth height animation so it feels polished.
-
   document.querySelectorAll('.faq-q').forEach(q => {
     q.addEventListener('click', () => {
       const item   = q.closest('.faq-item');
       const isOpen = item.classList.contains('open');
-
-      // Close all other open items first
       document.querySelectorAll('.faq-item.open').forEach(openItem => {
         if (openItem !== item) {
           openItem.classList.remove('open');
@@ -24,35 +11,19 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       });
 
-      // Toggle this one
       item.classList.toggle('open', !isOpen);
       const arrow = q.querySelector('.faq-arrow');
       if (arrow) arrow.style.transform = isOpen ? 'rotate(0deg)' : 'rotate(180deg)';
     });
 
-    // Set arrow rotation for already-open items on load
     const item  = q.closest('.faq-item');
     const arrow = q.querySelector('.faq-arrow');
     if (item.classList.contains('open') && arrow) {
       arrow.style.transform = 'rotate(180deg)';
     }
   });
-
-
-  // ── COMMUNITY HELP BOARD ─────────────────────────────────────
-  // A public board where students can post their situation
-  // and others can reply with offers to help.
-  //
-  // Structure:
-  // - Post card: name, category tag, message, date
-  // - Reply thread: anyone can add a comment/offer
-  // - All saved in localStorage
-
-  // ── Inject the Community Board into the page ─────────────────
   const content = document.querySelector('.content');
   if (!content) return;
-
-  // Build the board HTML and insert before the contact section
   const contactSection = document.querySelector('.contact-section');
 
   const boardSection = document.createElement('div');
@@ -120,14 +91,12 @@ document.addEventListener('DOMContentLoaded', () => {
     content.appendChild(boardSection);
   }
 
-  // Add focus styles via JS
   boardSection.querySelectorAll('input, select, textarea').forEach(el => {
     el.addEventListener('focus',  () => el.style.borderColor = 'var(--green)');
     el.addEventListener('blur',   () => el.style.borderColor = 'var(--border)');
   });
 
 
-  // ── CATEGORY CONFIG ───────────────────────────────────────────
   const catConfig = {
     financial:     { label:' Financial Help',   bg:'var(--gold-light)',   color:'var(--gold)'   },
     academic:      { label:' Academic Support', bg:'var(--blue-light)',   color:'var(--blue)'   },
@@ -136,7 +105,6 @@ document.addEventListener('DOMContentLoaded', () => {
     other:         { label:' Other',            bg:'var(--surface)',      color:'var(--muted)'  },
   };
 
-  // Avatar colors cycle
   const avatarColors = ['#1a7a44','#1a5fa8','#c0392b','#6b3fa0','#b07d1a','#111612'];
   function getAvatar(name) {
     const color  = avatarColors[name.charCodeAt(0) % avatarColors.length];
@@ -146,7 +114,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
 
-  // ── RENDER A SINGLE POST CARD ─────────────────────────────────
   function renderPost(post) {
     const feed = document.getElementById('posts-feed');
     if (!feed) return;
@@ -227,23 +194,19 @@ document.addEventListener('DOMContentLoaded', () => {
       </div>
     `;
 
-    // Insert at top of feed
     feed.insertBefore(card, feed.firstChild);
 
-    // Focus styles for reply inputs
     card.querySelectorAll('input').forEach(inp => {
       inp.addEventListener('focus', () => inp.style.borderColor = 'var(--green)');
       inp.addEventListener('blur',  () => inp.style.borderColor = 'var(--border)');
     });
 
-    // Toggle replies section
     card.querySelector('.reply-toggle').addEventListener('click', () => {
       const section = document.getElementById(`replies-${post.id}`);
       const isHidden = section.style.display === 'none';
       section.style.display = isHidden ? 'block' : 'none';
     });
 
-    // Submit reply
     card.querySelector('.reply-submit').addEventListener('click', () => {
       const nameInp = card.querySelector('.reply-name-input');
       const msgInp  = card.querySelector('.reply-msg-input');
@@ -259,13 +222,11 @@ document.addEventListener('DOMContentLoaded', () => {
         date: new Date().toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' })
       };
 
-      // Add reply to DOM
       const repliesList = document.getElementById(`replies-list-${post.id}`);
       const replyEl     = document.createElement('div');
       replyEl.innerHTML = renderReplyHTML(reply);
       repliesList.appendChild(replyEl.firstChild);
 
-      // Save reply to localStorage
       const allPosts = JSON.parse(localStorage.getItem('yl_community_posts')) || [];
       const idx      = allPosts.findIndex(p => p.id === post.id);
       if (idx !== -1) {
@@ -274,12 +235,10 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('yl_community_posts', JSON.stringify(allPosts));
       }
 
-      // Update reply count
       const toggle = card.querySelector('.reply-toggle');
       const count  = (allPosts[idx]?.replies || []).length;
       toggle.textContent = `💬 ${count} ${count === 1 ? 'reply' : 'replies'} — Add yours`;
 
-      // Clear inputs
       if (nameInp) nameInp.value = '';
       if (msgInp)  msgInp.value  = '';
 
@@ -287,7 +246,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Build HTML for a single reply
   function renderReplyHTML(reply) {
     const av = getAvatar(reply.name);
     return `
@@ -310,10 +268,8 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
 
-  // ── LOAD EXISTING POSTS FROM LOCALSTORAGE ─────────────────────
   const savedPosts = JSON.parse(localStorage.getItem('yl_community_posts')) || [];
 
-  // Add some starter posts if board is empty
   if (savedPosts.length === 0) {
     const starterPosts = [
       {
@@ -346,7 +302,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
 
-  // ── SUBMIT NEW POST ───────────────────────────────────────────
   document.getElementById('post-submit')?.addEventListener('click', () => {
     const name     = document.getElementById('post-name')?.value.trim()    || '';
     const category = document.getElementById('post-category')?.value       || '';
@@ -363,15 +318,12 @@ document.addEventListener('DOMContentLoaded', () => {
       replies: []
     };
 
-    // Save
     const all = JSON.parse(localStorage.getItem('yl_community_posts')) || [];
     all.unshift(post);
     localStorage.setItem('yl_community_posts', JSON.stringify(all));
 
-    // Render
     renderPost(post);
 
-    // Clear form
     document.getElementById('post-name').value     = '';
     document.getElementById('post-category').value = '';
     document.getElementById('post-message').value  = '';
@@ -380,4 +332,4 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
 
-}); // end DOMContentLoaded
+}); 

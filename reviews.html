@@ -19,7 +19,6 @@
   *{margin:0;padding:0;box-sizing:border-box;}
   body{background:var(--bg);color:var(--ink);font-family:var(--font-body);min-height:100vh;overflow-x:hidden;}
 
-  /* ── NAV ── */
   nav{position:sticky;top:0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:0 48px;height:64px;background:#fff;border-bottom:1px solid var(--border);}
   .logo{font-family:var(--font-head);font-size:1.35rem;font-weight:900;color:var(--ink);letter-spacing:-.5px;flex-shrink:0;text-decoration:none;}
   .logo em{font-style:normal;color:var(--green);}
@@ -39,7 +38,6 @@
   .mobile-nav .mob-btn{background:var(--ink);color:#fff;text-align:center;padding:11px;border-radius:7px;margin-top:6px;font-weight:600;}
   .mobile-nav.open{display:flex;}
 
-  /* ── HERO ── */
   .hero{background:var(--surface);border-bottom:1px solid var(--border);padding:52px 48px;}
   .hero-inner{max-width:1200px;margin:0 auto;display:flex;justify-content:space-between;align-items:flex-end;gap:32px;flex-wrap:wrap;}
   .hero-tag{display:inline-flex;align-items:center;gap:6px;background:#fff;border:1px solid var(--border-dark);padding:5px 12px;border-radius:100px;font-size:.75rem;font-weight:600;color:var(--ink);margin-bottom:16px;}
@@ -54,7 +52,6 @@
   .hs-val.b{color:var(--blue);}
   .hs-label{font-size:.72rem;color:var(--muted);font-weight:500;}
 
-  /* ── RATING BAR ── */
   .rating-bar{border-bottom:1px solid var(--border);background:#fff;}
   .rating-inner{max-width:1200px;margin:0 auto;padding:24px 48px;display:flex;align-items:center;gap:40px;flex-wrap:wrap;}
   .overall-score{text-align:center;flex-shrink:0;}
@@ -73,10 +70,8 @@
   .rcat-val{font-family:var(--font-head);font-size:1.3rem;font-weight:700;letter-spacing:-.5px;margin-bottom:2px;}
   .rcat-label{font-size:.7rem;color:var(--muted);font-weight:500;}
 
-  /* ── LAYOUT ── */
   .main-wrap{max-width:1200px;margin:0 auto;padding:40px 48px;display:grid;grid-template-columns:1fr 380px;gap:32px;align-items:start;}
 
-  /* ── REVIEWS FEED ── */
   .feed-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px;}
   .section-title{font-family:var(--font-head);font-size:1.1rem;font-weight:700;letter-spacing:-.3px;}
   .feed-controls{display:flex;gap:8px;}
@@ -84,11 +79,9 @@
   .ftab:hover{border-color:var(--ink);color:var(--ink);}
   .ftab.active{background:var(--ink);color:#fff;border-color:var(--ink);}
 
-  /* PINNED */
   .pinned-card{background:var(--gold-light);border:1px solid #e8d08a;border-radius:12px;padding:22px;margin-bottom:16px;position:relative;}
   .pin-badge{position:absolute;top:14px;right:14px;background:var(--gold);color:#fff;font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:3px 8px;border-radius:4px;}
 
-  /* REVIEW CARD */
   .review-card{border:1px solid var(--border);border-radius:12px;padding:22px;margin-bottom:14px;transition:border-color .15s;}
   .review-card:hover{border-color:var(--border-dark);}
   .rc-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;gap:12px;}
@@ -119,10 +112,8 @@
   .reply-head{display:flex;align-items:center;gap:6px;font-size:.72rem;font-weight:700;color:var(--green);margin-bottom:6px;}
   .reply-text{font-size:.82rem;color:var(--ink);line-height:1.55;}
 
-  /* ── SIDEBAR ── */
   .sidebar{display:flex;flex-direction:column;gap:20px;}
 
-  /* SUBMIT FORM */
   .form-card{border:1px solid var(--border);border-radius:12px;overflow:hidden;}
   .form-card-head{background:var(--surface);border-bottom:1px solid var(--border);padding:16px 20px;}
   .form-card-title{font-family:var(--font-head);font-size:1rem;font-weight:700;letter-spacing:-.3px;}
@@ -134,7 +125,6 @@
   .form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--green);}
   .form-group textarea{resize:vertical;min-height:100px;}
 
-  /* STAR PICKER */
   .star-picker{display:flex;gap:4px;margin-bottom:14px;}
   .star-pick{font-size:1.5rem;cursor:pointer;transition:transform .1s;filter:grayscale(1);opacity:.4;}
   .star-pick:hover,.star-pick.active{filter:none;opacity:1;transform:scale(1.1);}
@@ -142,14 +132,12 @@
   .submit-btn{background:var(--green);color:#fff;padding:11px;border-radius:8px;font-weight:600;font-size:.88rem;cursor:pointer;border:none;font-family:var(--font-body);width:100%;}
   .submit-btn:hover{opacity:.88;}
 
-  /* TIPS CARD */
   .tips-card{border:1px solid var(--border);border-radius:12px;padding:20px;}
   .tips-title{font-weight:700;font-size:.88rem;margin-bottom:12px;}
   .tip-item{display:flex;align-items:flex-start;gap:8px;margin-bottom:10px;font-size:.8rem;color:var(--muted);line-height:1.5;}
   .tip-item:last-child{margin-bottom:0;}
   .tip-ico{flex-shrink:0;}
 
-  /* TOP CONTRIBUTORS */
   .contrib-card{border:1px solid var(--border);border-radius:12px;overflow:hidden;}
   .contrib-head{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 20px;}
   .contrib-row{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid var(--border);}
@@ -190,7 +178,6 @@
 </head>
 <body>
 
-<!-- NAV -->
 <nav>
   <a href="index.html" class="logo">Your<em>Say</em></a>
   <ul class="nav-links">
@@ -215,7 +202,6 @@
   <a href="#" class="mob-btn">+ Raise Issue</a>
 </div>
 
-<!-- HERO -->
 <div class="hero">
   <div class="hero-inner">
     <div>
@@ -231,7 +217,6 @@
   </div>
 </div>
 
-<!-- RATING BAR -->
 <div class="rating-bar">
   <div class="rating-inner">
     <div class="overall-score">
@@ -254,11 +239,7 @@
     </div>
   </div>
 </div>
-
-<!-- MAIN -->
 <div class="main-wrap">
-
-  <!-- LEFT: REVIEWS FEED -->
   <div>
     <div class="feed-head">
       <div class="section-title">All Reviews <span style="color:var(--muted);font-weight:400;font-size:.85rem">(312)</span></div>
@@ -269,8 +250,6 @@
         <button class="ftab">Content</button>
       </div>
     </div>
-
-    <!-- PINNED -->
     <div class="pinned-card">
       <span class="pin-badge"> Pinned</span>
       <div class="rc-top">
@@ -296,8 +275,6 @@
         <div class="reply-text">Great suggestion Sandeep! Date range filter is on our roadmap for the next update. PDF export for reports is also noted — we'll push it in the coming weeks. Thank you for the detailed feedback.</div>
       </div>
     </div>
-
-    <!-- REVIEW 1 -->
     <div class="review-card">
       <div class="rc-top">
         <div class="rc-user">
@@ -318,8 +295,6 @@
         <span class="rc-date">Jun 4, 2026</span>
       </div>
     </div>
-
-    <!-- REVIEW 2 -->
     <div class="review-card">
       <div class="rc-top">
         <div class="rc-user">
@@ -340,8 +315,6 @@
         <span class="rc-date">Jun 2, 2026</span>
       </div>
     </div>
-
-    <!-- REVIEW 3 -->
     <div class="review-card">
       <div class="rc-top">
         <div class="rc-user">
@@ -362,8 +335,6 @@
         <span class="rc-date">Jun 1, 2026</span>
       </div>
     </div>
-
-    <!-- REVIEW 4 -->
     <div class="review-card">
       <div class="rc-top">
         <div class="rc-user">
@@ -388,8 +359,6 @@
         <div class="reply-text">Thank you Vikram! Vote confirmation feedback is being added in the next JS update. Mobile nav improvements are in progress. Really appreciate you flagging these — this is exactly the kind of feedback that makes the platform better.</div>
       </div>
     </div>
-
-    <!-- REVIEW 5 -->
     <div class="review-card">
       <div class="rc-top">
         <div class="rc-user">
@@ -412,11 +381,7 @@
     </div>
 
   </div>
-
-  <!-- SIDEBAR -->
   <div class="sidebar">
-
-    <!-- SUBMIT FORM -->
     <div class="form-card">
       <div class="form-card-head">
         <div class="form-card-title">Leave a Review</div>
@@ -460,7 +425,6 @@
       </div>
     </div>
 
-    <!-- TIPS -->
     <div class="tips-card">
       <div class="tips-title"> What makes a good review?</div>
       <div class="tip-item"><span class="tip-ico">✅</span><span>Be specific — mention the exact page or feature you're talking about</span></div>
@@ -469,7 +433,6 @@
       <div class="tip-item"><span class="tip-ico">❌</span><span>Spam, irrelevant content, or personal attacks will be removed</span></div>
     </div>
 
-    <!-- TOP CONTRIBUTORS -->
     <div class="contrib-card">
       <div class="contrib-head">
         <div class="section-title" style="font-size:.95rem">Top Reviewers</div>
@@ -509,7 +472,6 @@
 </footer>
 
 <script>
-  // Simple star rating interaction — no library needed
   function setRating(n){
     const stars = document.querySelectorAll('.star-pick');
     stars.forEach((s,i) => {
@@ -517,7 +479,6 @@
     });
   }
 
-  // FAQ toggle (reusable for other pages)
   document.querySelectorAll('.faq-q').forEach(q => {
     q.addEventListener('click', () => {
       q.closest('.faq-item').classList.toggle('open');

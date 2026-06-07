@@ -1,17 +1,4 @@
-// ============================================================
-//  YourSay — issues.js  (runs only on issues.html)
-//  Fixed: vote button count parsing was breaking
-// ============================================================
-
 document.addEventListener('DOMContentLoaded', () => {
-
-
-  // ── VOTE BUTTONS ─────────────────────────────────────────────
-  // THE BUG: Parsing "▲ 2,341 votes" was unreliable.
-  // THE FIX: Store the count as a data attribute on the card
-  //          so we always have a clean number to work with.
-
-  // Load what the user has already voted on
   const userVoted  = JSON.parse(localStorage.getItem('yl_voted'))  || {};
   const savedCounts= JSON.parse(localStorage.getItem('yl_counts')) || {};
 
@@ -21,22 +8,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const issueNumEl = card.querySelector('.issue-num');
 
     if (!voteBtn || !voteInfo || !issueNumEl) return;
-
-    // Get issue ID — strip "#" and spaces
     const id = issueNumEl.textContent.replace('#','').trim();
-
-    // Parse the current count from HTML text
-    // "▲ 2,341 votes" → remove everything except digits and commas
     const rawText = voteInfo.textContent.replace(/[^0-9,]/g,'').replace(/,/g,'');
     const htmlCount = parseInt(rawText) || 0;
-
-    // Use saved count if it exists, otherwise use the HTML count
     let count = savedCounts[id] !== undefined ? savedCounts[id] : htmlCount;
 
-    // Display the count (formatted with Indian number system)
     voteInfo.textContent = `▲ ${count.toLocaleString('en-IN')} votes`;
 
-    // If user already voted on this issue — show voted state
     if (userVoted[id]) {
       voteBtn.textContent      = '✓ Voted';
       voteBtn.disabled         = true;
@@ -47,17 +25,12 @@ document.addEventListener('DOMContentLoaded', () => {
       voteBtn.style.borderColor= 'var(--green-mid)';
     }
 
-    // Click handler
     voteBtn.addEventListener('click', () => {
-      if (userVoted[id]) return; // already voted — do nothing
-
-      // Increment
+      if (userVoted[id]) return; 
       count++;
 
-      // Update display
       voteInfo.textContent = `▲ ${count.toLocaleString('en-IN')} votes`;
 
-      // Update button look
       voteBtn.textContent      = '✓ Voted';
       voteBtn.disabled         = true;
       voteBtn.style.opacity    = '0.55';
@@ -66,31 +39,22 @@ document.addEventListener('DOMContentLoaded', () => {
       voteBtn.style.color      = 'var(--green)';
       voteBtn.style.borderColor= 'var(--green-mid)';
 
-      // Save to localStorage
       userVoted[id]   = true;
       savedCounts[id] = count;
       localStorage.setItem('yl_voted',  JSON.stringify(userVoted));
       localStorage.setItem('yl_counts', JSON.stringify(savedCounts));
 
-      // Toast (from app.js)
       showToast('Vote counted! ▲', 'success');
     });
   });
-
-
-  // ── TAB FILTERING ─────────────────────────────────────────────
-  // Clicking a tab filters cards by their pill label.
 
   const tabs = document.querySelectorAll('.tab');
 
   tabs.forEach(tab => {
     tab.addEventListener('click', () => {
-
-      // Update active tab style
       tabs.forEach(t => t.classList.remove('active'));
       tab.classList.add('active');
 
-      // Get filter keyword from tab text (strip numbers)
       const keyword = tab.textContent.replace(/\d+/g,'').trim().toLowerCase();
 
       document.querySelectorAll('.issue-card').forEach(card => {
@@ -104,7 +68,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const pillText = pill.textContent.toLowerCase();
 
-        // Match pill text against tab keyword
         const show =
           (keyword === 'urgent'       && pillText.includes('urgent'))  ||
           (keyword === 'open'         && pillText.includes('open'))    ||
@@ -115,7 +78,6 @@ document.addEventListener('DOMContentLoaded', () => {
         card.style.display = show ? '' : 'none';
       });
 
-      // Show "no results" if nothing is visible
       const grid    = document.querySelector('.issues-grid');
       const visible = grid
         ? [...grid.querySelectorAll('.issue-card')].filter(c => c.style.display !== 'none').length
@@ -136,16 +98,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-
-  // ── RAISE ISSUE FORM ─────────────────────────────────────────
-  // Validates fields, creates a new card, saves to localStorage.
-
   const submitBtn = document.querySelector('.raise-section .submit-btn');
 
   if (submitBtn) {
     submitBtn.addEventListener('click', () => {
-
-      // Grab field values
       const fields = {
         title:    document.querySelector('.raise-form input[placeholder*="Brief"]'),
         location: document.querySelector('.raise-form input[placeholder*="District"]'),
@@ -162,13 +118,11 @@ document.addEventListener('DOMContentLoaded', () => {
         desc:     fields.desc     ? fields.desc.value.trim()     : '',
       };
 
-      // Validate
       if (!val.title)                                { showToast('Please enter an issue title.','error');    return; }
       if (!val.location)                             { showToast('Please enter the location.','error');      return; }
       if (!val.category || val.category==='Select category') { showToast('Please select a category.','error');   return; }
       if (!val.desc)                                 { showToast('Please describe the problem.','error');    return; }
 
-      // Build card
       const grid = document.querySelector('.issues-grid');
       if (!grid) return;
 
@@ -205,22 +159,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
       grid.insertBefore(card, grid.firstChild);
 
-      // Save to localStorage
       const saved = JSON.parse(localStorage.getItem('yl_issues')) || [];
       saved.unshift({ id, ...val });
       localStorage.setItem('yl_issues', JSON.stringify(saved));
 
-      // Clear fields
       Object.values(fields).forEach(f => { if(f) f.value = f.tagName==='SELECT' ? f.options[0].value : ''; });
 
-      // Scroll to new card and show toast
       window.scrollTo({ top: 0, behavior: 'smooth' });
       showToast('Issue submitted! Under review now. ✓', 'success');
     });
   }
 
 
-  // ── SCROLL TO FORM (hero "Raise an Issue" button) ────────────
   document.querySelectorAll('.raise-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const form = document.querySelector('.raise-section');
@@ -228,8 +178,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-
-  // ── LOAD PREVIOUSLY SUBMITTED ISSUES ─────────────────────────
   const saved = JSON.parse(localStorage.getItem('yl_issues')) || [];
   const grid  = document.querySelector('.issues-grid');
 
@@ -271,4 +219,4 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-}); // end DOMContentLoaded
+}); 

@@ -1,16 +1,4 @@
-// ============================================================
-//  YourSay — transactions.js  (runs only on transactions.html)
-//  Step 4: Live search + combo filter + CSV export + pagination
-// ============================================================
-
 document.addEventListener('DOMContentLoaded', () => {
-
-
-  // ── DATA ─────────────────────────────────────────────────────
-  // All transactions stored as an array of objects.
-  // Later when Django is ready, this comes from the database.
-  // For now we define it here so search/filter/CSV all work.
-
   const transactions = [
     { num:'001', name:'Government Allocation — Q3',          sub:'Ministry of Finance · Jun 1, 2026',   type:'credit', category:'Government', status:'received',   amount:'+₹12,00,000', icon:'📥' },
     { num:'002', name:'Medical Camp — Nalgonda District',    sub:'Issue #87 · May 28, 2026',            type:'debit',  category:'Healthcare',  status:'completed',  amount:'−₹2,40,000',  icon:'🏥' },
@@ -25,18 +13,9 @@ document.addEventListener('DOMContentLoaded', () => {
     { num:'011', name:'Ambulance — Adilabad Tribal Area',    sub:'Issue #87 · Mar 28, 2026',            type:'debit',  category:'Healthcare',  status:'completed',  amount:'−₹6,00,000',  icon:'🚑' },
     { num:'012', name:'School Toilets — Nizamabad',          sub:'Issue #115 · Mar 15, 2026',           type:'debit',  category:'Education',   status:'voting',     amount:'−₹3,50,000',  icon:'🏫' },
   ];
-
-  // ── CURRENT FILTERED LIST ─────────────────────────────────────
-  // We keep a copy of the filtered results so CSV exports
-  // only the rows the user is currently looking at.
   let filtered = [...transactions];
-
-  // ── PAGINATION ───────────────────────────────────────────────
   const ROWS_PER_PAGE = 8;
   let currentPage = 1;
-
-
-  // ── GET FILTER VALUES ─────────────────────────────────────────
   const searchInput  = document.querySelector('.search-wrap input');
   const typeSelect   = document.querySelectorAll('.filter-select')[0];
   const statusSelect = document.querySelectorAll('.filter-select')[1];
@@ -51,37 +30,27 @@ document.addEventListener('DOMContentLoaded', () => {
     };
   }
 
-
-  // ── FILTER LOGIC ─────────────────────────────────────────────
-  // Runs every time any filter changes.
-  // Goes through every transaction and keeps only matching ones.
-
   function applyFilters() {
     const f = getFilters();
 
     filtered = transactions.filter(tx => {
-
-      // Search — checks name and sub text
       const matchSearch = !f.search ||
         tx.name.toLowerCase().includes(f.search) ||
         tx.sub.toLowerCase().includes(f.search)  ||
         tx.category.toLowerCase().includes(f.search);
 
-      // Type filter
       const matchType =
         f.type === 'All Types'   ||
         (f.type === 'Credit (In)' && tx.type === 'credit') ||
         (f.type === 'Debit (Out)' && tx.type === 'debit');
 
-      // Status filter
-      const matchStatus =
+        const matchStatus =
         f.status === 'All Status'   ||
         (f.status === 'Completed'   && tx.status === 'completed') ||
         (f.status === 'In Progress' && tx.status === 'progress')  ||
         (f.status === 'Voting'      && tx.status === 'voting')    ||
         (f.status === 'Received'    && tx.status === 'received');
 
-      // Category filter
       const matchCat =
         f.cat === 'All Categories' ||
         tx.category === f.cat;
@@ -89,30 +58,23 @@ document.addEventListener('DOMContentLoaded', () => {
       return matchSearch && matchType && matchStatus && matchCat;
     });
 
-    currentPage = 1; // reset to page 1 when filter changes
+    currentPage = 1; 
     renderTable();
     renderPagination();
   }
-
-
-  // ── RENDER TABLE ─────────────────────────────────────────────
-  // Clears the table body and redraws with the filtered + paged data.
 
   function renderTable() {
     const tbody = document.querySelector('.tx-table');
     if (!tbody) return;
 
-    // Remove all rows except the header
     const header = tbody.querySelector('.tx-head');
     tbody.innerHTML = '';
     if (header) tbody.appendChild(header);
 
-    // Slice the filtered array for the current page
     const start = (currentPage - 1) * ROWS_PER_PAGE;
     const end   = start + ROWS_PER_PAGE;
     const pageData = filtered.slice(start, end);
 
-    // If nothing matches, show a "no results" message
     if (pageData.length === 0) {
       const msg = document.createElement('div');
       msg.style.cssText = 'padding:32px;text-align:center;color:var(--muted);font-size:.9rem;';
@@ -121,12 +83,10 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    // Build a row for each transaction
     pageData.forEach(tx => {
       const row = document.createElement('div');
       row.className = 'tx-row';
 
-      // Status badge
       const statusMap = {
         received:  { cls:'s-done', label:'✓ Received'    },
         completed: { cls:'s-done', label:'✓ Completed'   },
@@ -153,7 +113,6 @@ document.addEventListener('DOMContentLoaded', () => {
       tbody.appendChild(row);
     });
 
-    // Update the "Showing X–Y of Z" info text
     const pgInfo = document.querySelector('.pg-info');
     if (pgInfo) {
       const from  = filtered.length === 0 ? 0 : start + 1;
@@ -162,10 +121,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-
-  // ── RENDER PAGINATION ─────────────────────────────────────────
-  // Builds page number buttons based on total filtered results.
-
   function renderPagination() {
     const pgBtns = document.querySelector('.pg-btns');
     if (!pgBtns) return;
@@ -173,14 +128,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const totalPages = Math.ceil(filtered.length / ROWS_PER_PAGE);
     pgBtns.innerHTML = '';
 
-    // Previous button
     const prev = makePageBtn('‹', currentPage === 1);
     prev.addEventListener('click', () => {
       if (currentPage > 1) { currentPage--; renderTable(); renderPagination(); }
     });
     pgBtns.appendChild(prev);
 
-    // Page number buttons (show max 5)
     let start = Math.max(1, currentPage - 2);
     let end   = Math.min(totalPages, start + 4);
     if (end - start < 4) start = Math.max(1, end - 4);
@@ -196,7 +149,6 @@ document.addEventListener('DOMContentLoaded', () => {
       pgBtns.appendChild(btn);
     }
 
-    // Next button
     const next = makePageBtn('›', currentPage === totalPages || totalPages === 0);
     next.addEventListener('click', () => {
       if (currentPage < totalPages) { currentPage++; renderTable(); renderPagination(); }
@@ -204,7 +156,6 @@ document.addEventListener('DOMContentLoaded', () => {
     pgBtns.appendChild(next);
   }
 
-  // Helper: create a single page button
   function makePageBtn(label, disabled = false, active = false) {
     const btn = document.createElement('button');
     btn.className = 'pg-btn' + (active ? ' active' : '') + (disabled ? ' disabled' : '');
@@ -212,17 +163,6 @@ document.addEventListener('DOMContentLoaded', () => {
     btn.disabled    = disabled;
     return btn;
   }
-
-
-  // ── CSV EXPORT ───────────────────────────────────────────────
-  // Converts the currently FILTERED transactions to a CSV file
-  // and downloads it. No library needed — pure JavaScript.
-  //
-  // How it works:
-  // 1. Build a string of comma-separated values
-  // 2. Wrap it in a Blob (like a fake file in memory)
-  // 3. Create a temporary download link and click it
-  // 4. Remove the link
 
   const exportBtn = document.querySelector('.export-btn');
   if (exportBtn) {
@@ -233,56 +173,42 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      // CSV header row
       const headers = ['#', 'Description', 'Date', 'Category', 'Status', 'Amount'];
 
-      // Build rows from filtered data
       const rows = filtered.map(tx => [
         tx.num,
-        `"${tx.name}"`,                       // quotes around text with commas
+        `"${tx.name}"`,                       
         `"${tx.sub}"`,
         tx.category,
         tx.status,
-        tx.amount.replace('₹','Rs. '),        // ₹ symbol can break some Excel
+        tx.amount.replace('₹','Rs. '),        
       ]);
 
-      // Join everything into one CSV string
       const csvContent = [
         headers.join(','),
         ...rows.map(r => r.join(','))
       ].join('\n');
 
-      // Create a downloadable file from the string
       const blob     = new Blob([csvContent], { type:'text/csv;charset=utf-8;' });
       const url      = URL.createObjectURL(blob);
       const link     = document.createElement('a');
       link.href      = url;
       link.download  = `YourSay-transactions-${Date.now()}.csv`;
 
-      // Trigger the download
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      URL.revokeObjectURL(url); // clean up memory
+      URL.revokeObjectURL(url); 
 
       showToast(`Exported ${filtered.length} transactions as CSV ✓`, 'success');
     });
   }
 
-
-  // ── ATTACH EVENT LISTENERS ───────────────────────────────────
-  // Connect every filter input to applyFilters()
-  // so the table updates live as you type or select.
-
   if (searchInput)  searchInput.addEventListener('input',  applyFilters);
   if (typeSelect)   typeSelect.addEventListener('change',  applyFilters);
   if (statusSelect) statusSelect.addEventListener('change',applyFilters);
   if (catSelect)    catSelect.addEventListener('change',   applyFilters);
-
-
-  // ── INITIAL RENDER ───────────────────────────────────────────
-  // Draw the table when the page first loads.
   applyFilters();
 
 
-}); // end DOMContentLoaded
+}); 
