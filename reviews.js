@@ -1,236 +1,381 @@
-document.addEventListener('DOMContentLoaded', () => {
-  let userRating = 0; // 0 means not selected yet
+const REV_API = 'https://yoursay-backend-g6ri.onrender.com/api/reviews/';
 
-  const stars = document.querySelectorAll('.star-pick');
+document.addEventListener("DOMContentLoaded", () => {
+  let userRating = 0;
+  function loadReviews() {
+    fetch(REV_API)
+      .then((res) => res.json())
+      .then((data) => {
+        const feed = document.querySelector(".feed-head").parentElement;
+
+        feed
+          .querySelectorAll(".review-card, .pinned-card")
+          .forEach((el) => el.remove());
+
+        data.reviews.forEach((r) => renderReviewCard(r, feed));
+        updateRatingBar(data.reviews);
+        updateTopReviewers(data.reviews);
+      })
+      .catch(() => {
+        showToast("Could not load reviews.", "error");
+      });
+  }
+
+  function renderReviewCard(r, feed) {
+    const stars = "⭐".repeat(r.rating);
+    const pillMap = {
+      ui: { cls: "cat-ui", label: "UI / Design" },
+      feature: { cls: "cat-feature", label: "Feature Request" },
+      bug: { cls: "cat-bug", label: "Bug Report" },
+      content: { cls: "cat-content", label: "Content" },
+      general: { cls: "cat-general", label: "General" },
+    };
+    const pill = pillMap[r.type] || pillMap.general;
+
+    const avatarColors = [
+      "#1a7a44",
+      "#1a5fa8",
+      "#c0392b",
+      "#6b3fa0",
+      "#b07d1a",
+      "#111612",
+    ];
+    const color = avatarColors[r.name.charCodeAt(0) % avatarColors.length];
+    const parts = r.name.toUpperCase().split(" ");
+    const initials =
+      parts.length >= 2
+        ? parts[0][0] + parts[parts.length - 1][0]
+        : parts[0].substring(0, 2);
+
+    const alreadyHelped =
+      sessionStorage.getItem(`yl_helped_${r.id}`) === "true";
+
+    const card = document.createElement("div");
+    card.className = r.is_pinned ? "pinned-card" : "review-card";
+    card.dataset.id = r.id;
+    if (r.is_pinned) {
+      card.innerHTML += `<span class="pin-badge">📌 Pinned</span>`;
+    }
+    card.innerHTML += `
+      <div class="rc-top">
+        <div class="rc-user">
+          <div class="avatar" style="background:${color};width:38px;height:38px;
+            border-radius:50%;display:flex;align-items:center;justify-content:center;
+            color:#fff;font-size:.85rem;font-weight:700;flex-shrink:0;">
+            ${initials}
+          </div>
+          <div>
+            <div class="user-name">${r.name}</div>
+            <div class="user-meta">
+              ${r.location ? "📍 " + r.location + " · " : ""}${r.created_at}
+            </div>
+          </div>
+        </div>
+        <div class="rc-right">
+          <div class="stars">${stars}</div>
+          <span class="rc-cat ${pill.cls}">${pill.label}</span>
+        </div>
+      </div>
+      <div class="review-text">${r.text}</div>
+      ${
+        r.team_reply
+          ? `
+        <div class="team-reply">
+          <div class="reply-head">✅ YourSay Team replied</div>
+          <div class="reply-text">${r.team_reply}</div>
+        </div>`
+          : ""
+      }
+      <div class="rc-footer">
+        <button class="helpful-btn" data-id="${r.id}"
+          data-count="${r.helpful}"
+          ${alreadyHelped ? 'disabled style="opacity:.6"' : ""}>
+          👍 Helpful (${r.helpful})
+        </button>
+        <span class="rc-date">${r.created_at}</span>
+      </div>
+    `;
+
+    const feedHead = feed.querySelector(".feed-head");
+    if (r.is_pinned) {
+      feedHead
+        ? feedHead.insertAdjacentElement("afterend", card)
+        : feed.insertBefore(card, feed.firstChild);
+    } else {
+      feed.appendChild(card);
+    }
+
+    const helpBtn = card.querySelector(".helpful-btn");
+    if (helpBtn && !alreadyHelped) {
+      helpBtn.addEventListener("click", () => markHelpful(r.id, helpBtn));
+    }
+  }
+
+  function markHelpful(reviewId, btn) {
+    fetch(`${REV_API}${reviewId}/helpful/`, { method: "POST" })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          btn.textContent = `👍 Helpful (${data.helpful})`;
+          btn.disabled = true;
+          btn.style.color = "var(--green)";
+          btn.style.borderColor = "var(--green-mid)";
+          sessionStorage.setItem(`yl_helped_${reviewId}`, "true");
+          showToast("Marked as helpful!", "success");
+        }
+      })
+      .catch(() => showToast("Could not save. Try again.", "error"));
+  }
+
+  function updateRatingBar(reviews) {
+    if (!reviews.length) return;
+
+    const total = reviews.length;
+    const avg = (reviews.reduce((s, r) => s + r.rating, 0) / total).toFixed(1);
+
+    const scoreBig = document.querySelector(".score-big");
+    if (scoreBig) scoreBig.textContent = avg;
+
+    const scoreCount = document.querySelector(".score-count");
+    if (scoreCount) scoreCount.textContent = `Based on ${total} reviews`;
+
+    const counts = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
+    reviews.forEach((r) => counts[r.rating]++);
+
+    document.querySelectorAll(".rb-row").forEach((row) => {
+      const label = row.querySelector(".rb-label");
+      const bar = row.querySelector(".rb-bar");
+      const count = row.querySelector(".rb-count");
+      if (!label) return;
+
+      const star = parseInt(label.textContent);
+      const pct = total > 0 ? (counts[star] / total) * 100 : 0;
+      if (bar) bar.style.width = pct + "%";
+      if (count) count.textContent = counts[star];
+    });
+
+    const statVals = document.querySelectorAll(".hs-val");
+    if (statVals[0]) statVals[0].textContent = avg;
+    if (statVals[1]) statVals[1].textContent = total;
+    const posPct =
+      total > 0
+        ? Math.round(
+            (reviews.filter((r) => r.rating >= 4).length / total) * 100,
+          )
+        : 0;
+    if (statVals[2]) statVals[2].textContent = posPct + "%";
+  }
+
+  // ── UPDATE TOP REVIEWERS ──────────────────────────────────────
+function updateTopReviewers(reviews) {
+  // Group reviews by name and sum up counts
+  const reviewerMap = {};
+
+  reviews.forEach(r => {
+    if (!reviewerMap[r.name]) {
+      reviewerMap[r.name] = { name: r.name, count: 0, helpful: 0 };
+    }
+    reviewerMap[r.name].count  += 1;
+    reviewerMap[r.name].helpful += r.helpful;
+  });
+
+  // Sort by helpful first, then by review count
+  const sorted = Object.values(reviewerMap)
+    .sort((a, b) => b.helpful - a.helpful || b.count - a.count)
+    .slice(0, 3);
+
+  const badges = [
+    { cls:'badge-gold',   label:'🥇 Gold'   },
+    { cls:'badge-silver', label:'🥈 Silver' },
+    { cls:'badge-bronze', label:'🥉 Bronze' },
+  ];
+
+  const avatarColors = [
+    '#1a7a44','#1a5fa8','#c0392b',
+    '#6b3fa0','#b07d1a','#111612'
+  ];
+
+  // Find the container that holds the rows
+  const contribCard = document.querySelector('.contrib-card');
+  if (!contribCard) return;
+
+  // Remove old rows but keep the header
+  contribCard.querySelectorAll('.contrib-row').forEach(r => r.remove());
+
+  // Build new rows from real data
+  sorted.forEach((reviewer, i) => {
+    const color    = avatarColors[reviewer.name.charCodeAt(0) % avatarColors.length];
+    const parts    = reviewer.name.toUpperCase().split(' ');
+    const initials = parts.length >= 2
+      ? parts[0][0] + parts[parts.length-1][0]
+      : parts[0].substring(0, 2);
+
+    const badge = badges[i];
+
+    const row = document.createElement('div');
+    row.className = 'contrib-row';
+    row.innerHTML = `
+      <div class="contrib-left">
+        <span class="contrib-rank">${i + 1}</span>
+        <div style="width:30px;height:30px;border-radius:50%;
+          background:${color};display:flex;align-items:center;
+          justify-content:center;color:#fff;font-size:.7rem;
+          font-weight:700;flex-shrink:0;">
+          ${initials}
+        </div>
+        <div>
+          <div class="contrib-name">${reviewer.name}</div>
+          <div class="contrib-count">
+            ${reviewer.count} ${reviewer.count === 1 ? 'review' : 'reviews'}
+            · ${reviewer.helpful} helpful
+          </div>
+        </div>
+      </div>
+      <span class="contrib-badge ${badge.cls}">${badge.label}</span>
+    `;
+    contribCard.appendChild(row);
+  });
+
+  // If no reviewers yet
+  if (sorted.length === 0) {
+    const empty = document.createElement('div');
+    empty.style.cssText = 'padding:16px 20px;font-size:.82rem;color:var(--muted);';
+    empty.textContent   = 'No reviews yet. Be the first!';
+    contribCard.appendChild(empty);
+  }
+}
+
+  const stars = document.querySelectorAll(".star-pick");
+  const starPicker = document.querySelector(".star-picker");
 
   stars.forEach((star, index) => {
-    star.removeAttribute('onclick');
+    star.removeAttribute("onclick");
 
-    star.addEventListener('mouseenter', () => {
+    star.addEventListener("mouseenter", () => {
       stars.forEach((s, i) => {
-        s.style.filter  = i <= index ? 'none'        : 'grayscale(1)';
-        s.style.opacity = i <= index ? '1'           : '0.3';
+        s.style.filter = i <= index ? "none" : "grayscale(1)";
+        s.style.opacity = i <= index ? "1" : "0.3";
       });
     });
-    star.addEventListener('mouseleave', () => {
-      updateStarDisplay(userRating);
-    });
 
-    star.addEventListener('click', () => {
-      userRating = index + 1; 
-      updateStarDisplay(userRating);
-      showToast(`You rated ${userRating} star${userRating > 1 ? 's' : ''}`, 'info');
+    star.addEventListener("click", () => {
+      userRating = index + 1;
+      updateStars(userRating);
+      showToast(
+        `${userRating} star${userRating > 1 ? "s" : ""} selected`,
+        "info",
+      );
     });
   });
 
-  function updateStarDisplay(rating) {
-    stars.forEach((s, i) => {
-      s.style.filter  = i < rating ? 'none'        : 'grayscale(1)';
-      s.style.opacity = i < rating ? '1'           : '0.3';
-    });
-  }
-
-  const starPicker = document.querySelector('.star-picker');
   if (starPicker) {
-    starPicker.addEventListener('mouseleave', () => {
-      updateStarDisplay(userRating);
+    starPicker.addEventListener("mouseleave", () => updateStars(userRating));
+  }
+
+  function updateStars(rating) {
+    stars.forEach((s, i) => {
+      s.style.filter = i < rating ? "none" : "grayscale(1)";
+      s.style.opacity = i < rating ? "1" : "0.3";
     });
   }
 
-  const submitBtn = document.querySelector('.form-body .submit-btn');
-
+  const submitBtn = document.querySelector(".form-body .submit-btn");
   if (submitBtn) {
-    submitBtn.addEventListener('click', () => {
+    submitBtn.addEventListener("click", () => {
+      const nameInput = document.querySelector(
+        '.form-body input[placeholder*="appear"]',
+      );
+      const locInput = document.querySelector(
+        '.form-body input[placeholder*="City"]',
+      );
+      const typeSelect = document.querySelector(".form-body select");
+      const textArea = document.querySelector(".form-body textarea");
 
-      const nameInput     = document.querySelector('.form-body input[placeholder*="appear"]');
-      const locationInput = document.querySelector('.form-body input[placeholder*="City"]');
-      const typeSelect    = document.querySelector('.form-body select');
-      const reviewText    = document.querySelector('.form-body textarea');
-
-      const name     = nameInput     ? nameInput.value.trim()     : '';
-      const location = locationInput ? locationInput.value.trim() : '';
-      const type     = typeSelect    ? typeSelect.value           : '';
-      const text     = reviewText    ? reviewText.value.trim()    : '';
+      const name = nameInput ? nameInput.value.trim() : "";
+      const loc = locInput ? locInput.value.trim() : "";
+      const type = typeSelect ? typeSelect.value : "general";
+      const text = textArea ? textArea.value.trim() : "";
 
       if (!name) {
-        showToast('Please enter your name.', 'error');
-        if (nameInput) nameInput.focus();
+        showToast("Please enter your name.", "error");
         return;
       }
       if (userRating === 0) {
-        showToast('Please select a star rating.', 'error');
+        showToast("Please select a star rating.", "error");
         return;
       }
-      if (!text || text.length < 20) {
-        showToast('Please write at least 20 characters.', 'error');
-        if (reviewText) reviewText.focus();
+      if (text.length < 20) {
+        showToast("Please write at least 20 characters.", "error");
         return;
       }
-      if (!type || type === 'Select type') {
-        showToast('Please select a feedback type.', 'error');
+      if (!type || type === "Select type") {
+        showToast("Please select a feedback type.", "error");
         return;
       }
 
-      const starStr = '⭐'.repeat(userRating);
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Submitting...";
 
-      const today = new Date().toLocaleDateString('en-IN', {
-        day:'numeric', month:'short', year:'numeric'
-      });
+      fetch(`${REV_API}submit/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name,
+          location: loc,
+          type,
+          rating: userRating,
+          text,
+        }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.success) {
+            // Clear form
+            if (nameInput) nameInput.value = "";
+            if (locInput) locInput.value = "";
+            if (typeSelect) typeSelect.value = "Select type";
+            if (textArea) textArea.value = "";
+            userRating = 0;
+            updateStars(0);
 
-      const pillMap = {
-        'UI / Design':       { cls:'cat-ui',      label:'UI / Design'    },
-        'Feature Request':   { cls:'cat-feature',  label:'Feature Request'},
-        'Bug Report':        { cls:'cat-bug',      label:'Bug Report'     },
-        'Content Feedback':  { cls:'cat-content',  label:'Content'        },
-        'General Review':    { cls:'cat-general',  label:'General'        },
-      };
-      const pill = pillMap[type] || { cls:'cat-general', label:'General' };
-
-      const avatarColors = ['av-green','av-blue','av-red','av-purple','av-gold','av-ink'];
-      const colorIndex   = name.charCodeAt(0) % avatarColors.length;
-      const avatarClass  = avatarColors[colorIndex];
-
-      const parts    = name.toUpperCase().split(' ');
-      const initials = parts.length >= 2
-        ? parts[0][0] + parts[parts.length-1][0]
-        : parts[0].substring(0,2);
-
-      const feed     = document.querySelector('.feed-head').parentElement;
-      const firstCard= document.querySelector('.pinned-card') ||
-                       document.querySelector('.review-card');
-
-      const newCard  = document.createElement('div');
-      newCard.className = 'review-card';
-      newCard.style.cssText = 'border:1.5px solid var(--green-mid);animation:fadeUp .4s ease both;';
-      newCard.innerHTML = `
-        <div class="rc-top">
-          <div class="rc-user">
-            <div class="avatar ${avatarClass}">${initials}</div>
-            <div>
-              <div class="user-name">${name}</div>
-              <div class="user-meta">${location ? '📍 ' + location + ' · ' : ''}${today}</div>
-            </div>
-          </div>
-          <div class="rc-right">
-            <div class="stars">${starStr}</div>
-            <span class="rc-cat ${pill.cls}">${pill.label}</span>
-          </div>
-        </div>
-        <div class="review-text">${text}</div>
-        <div class="rc-footer">
-          <button class="helpful-btn" data-count="0">👍 Helpful (0)</button>
-          <span class="rc-date">${today}</span>
-        </div>
-      `;
-
-      if (firstCard && firstCard.nextSibling) {
-        feed.insertBefore(newCard, firstCard.nextSibling);
-      } else if (firstCard) {
-        feed.appendChild(newCard);
-      }
-
-      attachHelpfulBtn(newCard.querySelector('.helpful-btn'));
-
-      const savedReviews = JSON.parse(localStorage.getItem('yl_reviews')) || [];
-      savedReviews.unshift({ name, location, type, text, rating:userRating, date:today });
-      localStorage.setItem('yl_reviews', JSON.stringify(savedReviews));
-
-      if (nameInput)     nameInput.value     = '';
-      if (locationInput) locationInput.value = '';
-      if (typeSelect)    typeSelect.value    = 'Select type';
-      if (reviewText)    reviewText.value    = '';
-      userRating = 0;
-      updateStarDisplay(0);
-
-      newCard.scrollIntoView({ behavior:'smooth', block:'center' });
-      showToast('Review posted! Thank you. ✓', 'success');
+            showToast("Review posted! Thank you ✓", "success");
+            loadReviews(); // reload to show new review
+          }
+        })
+        .catch(() => showToast("Submission failed. Try again.", "error"))
+        .finally(() => {
+          submitBtn.disabled = false;
+          submitBtn.textContent = "Submit Review";
+        });
     });
   }
 
-  const clickedHelpful = new Set(
-    JSON.parse(sessionStorage.getItem('yl_helpful')) || []
-  );
+  document.querySelectorAll(".ftab").forEach((tab) => {
+    tab.addEventListener("click", () => {
+      document
+        .querySelectorAll(".ftab")
+        .forEach((t) => t.classList.remove("active"));
+      tab.classList.add("active");
 
-  function attachHelpfulBtn(btn) {
-    if (!btn) return;
+      const keyword = tab.textContent.trim().toLowerCase();
 
-    btn.addEventListener('click', () => {
-      const btnId = btn.closest('.review-card, .pinned-card')
-        ?.querySelector('.user-name')?.textContent || btn.textContent;
-
-      if (clickedHelpful.has(btnId)) {
-        showToast('You already marked this as helpful.', 'info');
-        return;
-      }
-
-      const current = parseInt(btn.dataset.count) || 0;
-      const next    = current + 1;
-      btn.dataset.count  = next;
-      btn.textContent    = `👍 Helpful (${next})`;
-      btn.style.color    = 'var(--green)';
-      btn.style.borderColor = 'var(--green-mid)';
-
-      clickedHelpful.add(btnId);
-      sessionStorage.setItem('yl_helpful', JSON.stringify([...clickedHelpful]));
-
-      showToast('Marked as helpful!', 'success');
+      document
+        .querySelectorAll(".review-card, .pinned-card")
+        .forEach((card) => {
+          if (keyword === "all") {
+            card.style.display = "";
+            return;
+          }
+          const typeBadge = card.querySelector(".rc-cat");
+          if (!typeBadge) return;
+          card.style.display = typeBadge.textContent
+            .toLowerCase()
+            .includes(keyword)
+            ? ""
+            : "none";
+        });
     });
-  }
-
-  document.querySelectorAll('.helpful-btn').forEach(btn => {
-    const match = btn.textContent.match(/\((\d+)\)/);
-    if (match) btn.dataset.count = match[1];
-    attachHelpfulBtn(btn);
   });
 
-
-  const savedReviews = JSON.parse(localStorage.getItem('yl_reviews')) || [];
-  const feed         = document.querySelector('.pinned-card')?.parentElement
-                    || document.querySelector('.review-card')?.parentElement;
-  const anchor       = document.querySelector('.pinned-card') || document.querySelector('.review-card');
-
-  if (savedReviews.length && feed && anchor) {
-    savedReviews.forEach(r => {
-      const starStr     = '⭐'.repeat(r.rating || 5);
-      const pillMap     = {
-        'UI / Design':      {cls:'cat-ui',     label:'UI / Design'},
-        'Feature Request':  {cls:'cat-feature',label:'Feature Request'},
-        'Bug Report':       {cls:'cat-bug',    label:'Bug Report'},
-        'Content Feedback': {cls:'cat-content',label:'Content'},
-        'General Review':   {cls:'cat-general',label:'General'},
-      };
-      const pill        = pillMap[r.type] || {cls:'cat-general',label:'General'};
-      const colors      = ['av-green','av-blue','av-red','av-purple','av-gold','av-ink'];
-      const avatarClass = colors[r.name.charCodeAt(0) % colors.length];
-      const parts       = r.name.toUpperCase().split(' ');
-      const initials    = parts.length>=2 ? parts[0][0]+parts[parts.length-1][0] : parts[0].substring(0,2);
-
-      const card = document.createElement('div');
-      card.className = 'review-card';
-      card.style.border = '1.5px solid var(--green-mid)';
-      card.innerHTML = `
-        <div class="rc-top">
-          <div class="rc-user">
-            <div class="avatar ${avatarClass}">${initials}</div>
-            <div>
-              <div class="user-name">${r.name}</div>
-              <div class="user-meta">${r.location ? '📍 '+r.location+' · ':'' }${r.date}</div>
-            </div>
-          </div>
-          <div class="rc-right">
-            <div class="stars">${starStr}</div>
-            <span class="rc-cat ${pill.cls}">${pill.label}</span>
-          </div>
-        </div>
-        <div class="review-text">${r.text}</div>
-        <div class="rc-footer">
-          <button class="helpful-btn" data-count="0">👍 Helpful (0)</button>
-          <span class="rc-date">${r.date}</span>
-        </div>
-      `;
-      feed.insertBefore(card, anchor.nextSibling);
-      attachHelpfulBtn(card.querySelector('.helpful-btn'));
-    });
-  }
-
-}); 
+  loadReviews();
+});
